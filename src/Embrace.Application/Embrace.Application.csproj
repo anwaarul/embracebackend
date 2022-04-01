@@ -14,4 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Embrace.Core\Embrace.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
 </Project>

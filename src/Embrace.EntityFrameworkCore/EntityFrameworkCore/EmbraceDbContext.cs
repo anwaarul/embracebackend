@@ -3,6 +3,7 @@ using Abp.Zero.EntityFrameworkCore;
 using Embrace.Authorization.Roles;
 using Embrace.Authorization.Users;
 using Embrace.MultiTenancy;
+using Embrace.Entities;
 
 namespace Embrace.EntityFrameworkCore
 {
@@ -14,5 +15,6 @@ namespace Embrace.EntityFrameworkCore
             : base(options)
         {
         }
+        public DbSet<UniqueNameAndDateInfo> UniqueNameAndDateInfo { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using Embrace.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Embrace.Migrations
 {
     [DbContext(typeof(EmbraceDbContext))]
-    partial class EmbraceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220401104458_UniqueNameAndDateInfo")]
+    partial class UniqueNameAndDateInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1570,9 +1572,6 @@ namespace Embrace.Migrations
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
-
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
