@@ -4,14 +4,16 @@ using Embrace.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Embrace.Migrations
 {
     [DbContext(typeof(EmbraceDbContext))]
-    partial class EmbraceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220407055117_CategoryDb")]
+    partial class CategoryDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1573,102 +1575,21 @@ namespace Embrace.Migrations
                     b.ToTable("CategoryInfo");
                 });
 
-            modelBuilder.Entity("Embrace.Entities.MenstruationDetailsInfo", b =>
+            modelBuilder.Entity("Embrace.Entities.CategorySubCategoryAllocationInfo", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
+                    b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("Last_ovulation")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MyCycle")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Next_mens")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Next_ovulation")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Ovulation_day")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Ovulation_window1")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Ovulation_window2")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Ovulation_window3")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Ovulation_window4")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period1")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period2")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period3")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period4")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MenstruationDetailsInfo");
-                });
-
-            modelBuilder.Entity("Embrace.Entities.SubCategoryAndDateInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
                     b.Property<long?>("CreatorUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("DateAndTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<long?>("DeleterUserId")
                         .HasColumnType("bigint");
@@ -1694,12 +1615,9 @@ namespace Embrace.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("SubCategoryAndDateInfo");
+                    b.ToTable("CategorySubCategoryAllocationInfo");
                 });
 
             modelBuilder.Entity("Embrace.Entities.SubCategoryImageAllocationInfo", b =>
@@ -1793,60 +1711,6 @@ namespace Embrace.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SubCategoryInfo");
-                });
-
-            modelBuilder.Entity("Embrace.Entities.UniqueNameAndDateInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("DateAndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EndDatePeriod")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDatePeriod")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UniqueNameAndDateInfo");
                 });
 
             modelBuilder.Entity("Embrace.Entities.UsersDetailsInfo", b =>

@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 namespace Embrace.General.Dto
 {
     [AutoMapTo(typeof(UniqueNameAndDateInfo)), AutoMapFrom(typeof(UniqueNameAndDateInfo))]
-    public class UniqueNameAndDateDto 
+    public class UniqueNameAndDateDto
     {
         public string Name { get; set; }
+        public DateTime StartDatePeriod { get; set; }
+        public DateTime EndDatePeriod { get; set; }
         public DateTime DateAndTime { get; set; }
     }
 }

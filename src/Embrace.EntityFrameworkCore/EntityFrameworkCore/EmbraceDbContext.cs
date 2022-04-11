@@ -15,6 +15,12 @@ namespace Embrace.EntityFrameworkCore
             : base(options)
         {
         }
+        public DbSet<CategoryInfo> CategoryInfo { get; set; }
+        public DbSet<SubCategoryImageAllocationInfo> SubCategoryImageAllocationInfo { get; set; }
+        public DbSet<SubCategoryInfo> SubCategoryInfo { get; set; }
+        public DbSet<UsersDetailsInfo> UsersDetailsInfo { get; set; }
         public DbSet<UniqueNameAndDateInfo> UniqueNameAndDateInfo { get; set; }
+        public DbSet<MenstruationDetailsInfo> MenstruationDetailsInfo { get; set; }
+        public DbSet<SubCategoryAndDateInfo> SubCategoryAndDateInfo { get; set; }
     }
 }

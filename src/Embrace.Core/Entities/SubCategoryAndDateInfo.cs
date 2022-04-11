@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Embrace.Entities
 {
-    public class UniqueNameAndDateInfo : EmbraceProjBaseEntity
+    public class SubCategoryAndDateInfo : EmbraceProjBaseEntity
     {
-        public string Name { get; set; }
+        public long SubCategoryId { get; set; }
         public DateTime DateAndTime { get; set; }
-        public DateTime StartDatePeriod { get; set; }
-        public DateTime EndDatePeriod { get; set; }
         public string UniqueKey { get; set; }
 
     }
