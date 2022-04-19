@@ -15,5 +15,6 @@ namespace Embrace.General.Dto
         public DateTime StartDatePeriod { get; set; }
         public DateTime EndDatePeriod { get; set; }
         public DateTime DateAndTime { get; set; }
+        public int TenantId { get; set; }
     }
 }

@@ -47,24 +47,52 @@ namespace Embrace.General
 
         public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueKeyWithNameAndDateTime(UniqueNameAndDateDto input)
         {
+            UniqueNameAndDateInfo result = new UniqueNameAndDateInfo();
             //Converting DateTime to Date(string)
             var Date = input.DateAndTime.ToShortDateString();
 
             //Removing Extra Spaces from Name
 
             var nameWithoutSpaces = input.Name.Replace(" ", String.Empty);
-
-          
-            var result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
-            result.CreatorUserId = Convert.ToInt32(AbpSession.UserId);
-            result.TenantId = Convert.ToInt32(AbpSession.TenantId);
-            result.UniqueKey = nameWithoutSpaces + Date;
-            var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.Name == input.Name && x.DateAndTime.Date == input.DateAndTime.Date && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+           
+            var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.Name == input.Name && x.DateAndTime.Date == input.DateAndTime.Date && x.TenantId == input.TenantId).FirstOrDefault();
 
             if (dataUniqueKey != null)
             {
-                throw new UserFriendlyException("there is already Name entered with that" , result.UniqueKey);
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
+
+                result.DateAndTime = dataUniqueKey.DateAndTime;
+                result.StartDatePeriod = dataUniqueKey.StartDatePeriod;
+                result.EndDatePeriod = dataUniqueKey.EndDatePeriod;
+                result.UniqueKey = dataUniqueKey.UniqueKey;
+              
             }
+            else
+            {
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
+                result.TenantId = input.TenantId;
+                result.UniqueKey = nameWithoutSpaces + Date;
+
+                await _uniqueNameAndDateInfoRepository.InsertAsync(result);
+
+                result.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
+            }
+            var data = ObjectMapper.Map<UniqueNameAndDateUniqueKeyDto>(result);
+            return data;
+
+        }
+        public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueNameWithDate(CreateUniqueNameWithDateDto input)
+        {
+            var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).OrderByDescending(x=>x.Id).FirstOrDefault();
+
+            var result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
+            result.StartDatePeriod = dataUniqueKey.EndDatePeriod;
+            result.EndDatePeriod = input.DateAndTime;
+            result.TenantId = input.TenantId;
+            result.UniqueKey = dataUniqueKey.UniqueKey;
+            result.DateAndTime = dataUniqueKey.DateAndTime;       
             await _uniqueNameAndDateInfoRepository.InsertAsync(result);
 
             result.IsActive = true;
@@ -76,7 +104,7 @@ namespace Embrace.General
         }
         public async Task<MenstruationDetailsInfo> CreateMenstruationDetails(MenstruationDetailsDto input)
         {
-            var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
             if (uniquekey == null)
             {
                 throw new UserFriendlyException("Invalid Unique Key");
@@ -86,8 +114,7 @@ namespace Embrace.General
             menstruation = GetAllMenstruation(uniquekey.StartDatePeriod, uniquekey.EndDatePeriod);
             
             var result = new MenstruationDetailsInfo();
-            result.CreatorUserId = Convert.ToInt32(AbpSession.UserId);
-            result.TenantId = Convert.ToInt32(AbpSession.TenantId);
+            result.TenantId = input.TenantId;
             result.UniqueKey = uniquekey.UniqueKey;
             result.MyCycle = menstruation.MyCycle;
             result.Ovulation_day = menstruation.Ovulation_day;
@@ -114,20 +141,19 @@ namespace Embrace.General
 
         public async Task<SubCategoryAndDateDto> CreateSubCategoryAndDate(SubCategoryAndDateDto input)
         {
-            var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
             if (uniquekey == null)
             {
                 throw new UserFriendlyException("Invalid Unique Key");
             }
-            var subCategory = _subCategoryRepository.GetAll().Where(x => x.Id == input.SubCategoryId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var subCategory = _subCategoryRepository.GetAll().Where(x => x.Id == input.SubCategoryId && x.TenantId == input.TenantId).FirstOrDefault();
             if (uniquekey == null)
             {
                 throw new UserFriendlyException("Invalid SubCategory");
             }
 
             var result = ObjectMapper.Map<SubCategoryAndDateInfo>(input);
-            result.CreatorUserId = Convert.ToInt32(AbpSession.UserId);
-            result.TenantId = Convert.ToInt32(AbpSession.TenantId);
+            result.TenantId = input.TenantId;
             result.UniqueKey = uniquekey.UniqueKey;
             result.DateAndTime = input.DateAndTime;
             result.SubCategoryId = input.SubCategoryId;
@@ -141,9 +167,9 @@ namespace Embrace.General
             return data;
 
         }
-        public Task<PagedResultDto<UniqueNameAndDateUniqueKeyDto>> GetAllWithUniqueKey(PagedResultRequestDto input, string uniqueKey)
-        {
-            var query = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.UniqueKey == uniqueKey);
+        public Task<PagedResultDto<UniqueNameAndDateUniqueKeyDto>> GetAllWithUniqueKey(PagedResultRequestDto input, string uniqueKey , int tenantId)
+         {
+            var query = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId && x.UniqueKey == uniqueKey);
             var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
 
             var result = new PagedResultDto<UniqueNameAndDateUniqueKeyDto>(query.Count(), ObjectMapper.Map<List<UniqueNameAndDateUniqueKeyDto>>(statelist));
@@ -223,9 +249,13 @@ namespace Embrace.General
             };
             return getAllMenstruationDetails;
         }
-        public GetAllMenstruationDetails GetAllMenstruationDetailsbyUniqueKey(string uniquekey)
+        public GetAllMenstruationDetails GetAllMenstruationDetailsbyUniqueKey(string uniquekey , int tenantId)
         {
-            var menstruationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == uniquekey && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var menstruationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == uniquekey && x.TenantId == tenantId).OrderByDescending(x => x.Id).FirstOrDefault();
+            if (menstruationdata == null)
+            {
+                throw new UserFriendlyException("Invalid Unique Key");
+            }
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
             {
                 UniqueKey = menstruationdata.UniqueKey,
@@ -247,12 +277,45 @@ namespace Embrace.General
           
             return getAllMenstruationDetails;
         }
-    
-        public PagedResultDto<GetAllSubCategoryDto> GetAllSubCategorybyCategoryName(PagedResultRequestDto input , string categoryName)
+        public PagedResultDto<GetAllMenstruationDetails> GetAllMenstruationDetailsAgainstUniqueKey(string uniquekey, int tenantId)
         {
-            var category = _categoryRepository.GetAll().Where(x => x.Name == categoryName.ToLower() && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            List<GetAllMenstruationDetails> menstruationDetails = new List<GetAllMenstruationDetails>();
+            var menstruationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == uniquekey && x.TenantId == tenantId).ToList();
+            if (menstruationdata.Count == 0)
+            {
+                throw new UserFriendlyException("Invalid Unique Key");
+            }
+            foreach (var item in menstruationdata)
+            {
+                GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
+                {
+                    UniqueKey = item.UniqueKey,
+                    MyCycle = item.MyCycle,
+                    Ovulation_day = item.Ovulation_day,
+                    Last_ovulation = item.Last_ovulation,
+                    Next_mens = item.Next_mens,
+                    Next_ovulation = item.Next_ovulation,
+                    Ovulation_window1 = item.Ovulation_window1,
+                    Ovulation_window2 = item.Ovulation_window2,
+                    Ovulation_window3 = item.Ovulation_window3,
+                    Ovulation_window4 = item.Ovulation_window4,
+                    Safe_period1 = item.Safe_period1,
+                    Safe_period2 = item.Safe_period2,
+                    Safe_period3 = item.Safe_period3,
+                    Safe_period4 = item.Safe_period4,
+                };
+                menstruationDetails.Add(getAllMenstruationDetails);
+            }
 
-            var query = from sb in _subCategoryRepository.GetAll().Where(x => x.IsActive == true && x.CategoryId == category.Id && x.TenantId == AbpSession.TenantId)
+
+            var result = new PagedResultDto<GetAllMenstruationDetails>(menstruationDetails.Count(), ObjectMapper.Map<List<GetAllMenstruationDetails>>(menstruationDetails));
+            return result;
+        }
+        public PagedResultDto<GetAllSubCategoryDto> GetAllSubCategorybyCategoryName(PagedResultRequestDto input , string categoryName , int tenantId)
+        {
+            var category = _categoryRepository.GetAll().Where(x => x.Name == categoryName.ToLower() && x.TenantId == tenantId).FirstOrDefault();
+
+            var query = from sb in _subCategoryRepository.GetAll().Where(x => x.IsActive == true && x.CategoryId == category.Id && x.TenantId == tenantId)
                         join ca in _categoryRepository.GetAll() on sb.CategoryId equals ca.Id
                         select new GetAllSubCategoryDto()
                         {
@@ -266,10 +329,10 @@ namespace Embrace.General
             var result = new PagedResultDto<GetAllSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryDto>>(query));
             return result;
         }
-        public PagedResultDto<GetAllSubCategoryAndDateDto> GetAllSubCategoryAndDate(PagedResultRequestDto input)
+        public PagedResultDto<GetAllSubCategoryAndDateDto> GetAllSubCategoryAndDate(PagedResultRequestDto input, int tenantId)
         {
            
-            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true  && x.TenantId == AbpSession.TenantId)
+            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true  && x.TenantId == tenantId)
                         join ca in _subCategoryRepository.GetAll() on sb.SubCategoryId equals ca.Id
                         select new GetAllSubCategoryAndDateDto()
                         {
@@ -283,9 +346,9 @@ namespace Embrace.General
             var result = new PagedResultDto<GetAllSubCategoryAndDateDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryAndDateDto>>(query));
             return result;
         }
-        public PagedResultDto<GetAllImageSubCategoryDto> GetAllSubcategoryImageAllocation(PagedResultRequestDto input)
+        public PagedResultDto<GetAllImageSubCategoryDto> GetAllSubcategoryImageAllocation(PagedResultRequestDto input , int tenantId)
         {
-            var query = from sb in _subCategoryRepository.GetAll().Where(x => x.IsActive == true /*&& x.Id == subCategoryId*/ && x.TenantId == AbpSession.TenantId).ToList()
+            var query = from sb in _subCategoryRepository.GetAll().Where(x => x.IsActive == true /*&& x.Id == subCategoryId*/ && x.TenantId == tenantId).ToList()
                         join im in _subCategoryImageAllocationRepository.GetAll().ToList() on sb.Id equals im.SubCategoryId
                         into ImageGroups
                         select new GetAllImageSubCategoryDto()
@@ -297,6 +360,22 @@ namespace Embrace.General
                         };
 
             var result = new PagedResultDto<GetAllImageSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllImageSubCategoryDto>>(query));
+            return result;
+        }
+        public PagedResultDto<GetAllSubCategoryDto> GetAllSubCategory(PagedResultRequestDto input, int tenantId)
+        {
+            var query = from sb in _subCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
+                        join ca in _categoryRepository.GetAll() on sb.CategoryId equals ca.Id
+                        select new GetAllSubCategoryDto()
+                        {
+                            Id = sb.Id,
+                            CategoryId = ca.Id,
+                            CategoryName = ca.Name,
+                            Name = sb.Name,
+                            ImageUrl = sb.ImageUrl,
+                        };
+
+            var result = new PagedResultDto<GetAllSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryDto>>(query));
             return result;
         }
     }

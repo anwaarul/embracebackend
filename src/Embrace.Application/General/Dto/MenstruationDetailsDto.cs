@@ -15,6 +15,7 @@ namespace Embrace.General.Dto
     {
        
         public string UniqueKey { get; set; }
+        public int TenantId { get; set; }
 
     }
 }

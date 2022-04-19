@@ -167,7 +167,7 @@ namespace madamporter.Entites.SubCategoryImageAllocation
 
         public async Task DeleteSubCategoryImageAllocationbySubCategoryId(long subCategoryId)
         {
-            var subcategoryA = _subCategoryImageAllocationRepository.GetAll().Where(x => x.Id == subCategoryId && x.TenantId == AbpSession.TenantId).ToList();
+            var subcategoryA = _subCategoryImageAllocationRepository.GetAll().Where(x => x.SubCategoryId == subCategoryId && x.TenantId == AbpSession.TenantId).ToList();
 
             foreach (var subCategory in subcategoryA)
             {

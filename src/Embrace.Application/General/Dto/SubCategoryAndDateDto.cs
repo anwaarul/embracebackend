@@ -16,5 +16,6 @@ namespace Embrace.General.Dto
         public long SubCategoryId { get; set; }
         public DateTime DateAndTime { get; set; }
         public string UniqueKey { get; set; }
+        public int TenantId { get; set; }
     }
 }
