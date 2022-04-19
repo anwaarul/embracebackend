@@ -41,13 +41,41 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Create, L("CreateSubCategory"));
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Update, L("UpdateSubCategory"));
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Delete, L("DeleteSubCategory"));
+            
             //UsersDetails Permission
-
             context.CreatePermission(PermissionNames.LookUps_UsersDetails, L("UsersDetails"));
             context.CreatePermission(PermissionNames.LookUps_UsersDetails_Page, L("PageUsersDetails"));
             context.CreatePermission(PermissionNames.LookUps_UsersDetails_Create, L("CreateUsersDetails"));
             context.CreatePermission(PermissionNames.LookUps_UsersDetails_Update, L("UpdateUsersDetails"));
             context.CreatePermission(PermissionNames.LookUps_UsersDetails_Delete, L("DeleteUsersDetails"));
+
+            //ProductCategories Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductCategories, L("ProductCategories"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategories_Page, L("PageProductCategories"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategories_Create, L("CreateProductCategories"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategories_Update, L("UpdateProductCategories"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategories_Delete, L("DeleteProductCategories"));
+
+            //ProductVariants Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductVariants, L("ProductVariants"));
+            context.CreatePermission(PermissionNames.LookUps_ProductVariants_Page, L("PageProductVariants"));
+            context.CreatePermission(PermissionNames.LookUps_ProductVariants_Create, L("CreateProductVariants"));
+            context.CreatePermission(PermissionNames.LookUps_ProductVariants_Update, L("UpdateProductVariants"));
+            context.CreatePermission(PermissionNames.LookUps_ProductVariants_Delete, L("DeleteProductVariants"));
+
+            //Size Permission
+            context.CreatePermission(PermissionNames.LookUps_Size, L("Size"));
+            context.CreatePermission(PermissionNames.LookUps_Size_Page, L("PageSize"));
+            context.CreatePermission(PermissionNames.LookUps_Size_Create, L("CreateSize"));
+            context.CreatePermission(PermissionNames.LookUps_Size_Update, L("UpdateSize"));
+            context.CreatePermission(PermissionNames.LookUps_Size_Delete, L("DeleteSize"));
+
+            //ProductParameters Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductParameters, L("ProductParameters"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameters_Page, L("PageProductParameters"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameters_Create, L("CreateProductParameters"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameters_Update, L("UpdateProductParameters"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameters_Delete, L("DeleteProductParameters"));
 
         }
 

@@ -41,6 +41,34 @@
         public const string LookUps_Category_Create = "LookUps.Category.Create";
         public const string LookUps_Category_Update = "LookUps.Category.Update";
         public const string LookUps_Category_Delete = "LookUps.Category.Delete";
+
+        // ProductCategories API Permission
+        public const string LookUps_ProductCategories = "LookUps.ProductCategories";
+        public const string LookUps_ProductCategories_Page = "LookUps.ProductCategories.Pages";
+        public const string LookUps_ProductCategories_Create = "LookUps.ProductCategories.Create";
+        public const string LookUps_ProductCategories_Update = "LookUps.ProductCategories.Update";
+        public const string LookUps_ProductCategories_Delete = "LookUps.ProductCategories.Delete";
+
+        // ProductVariants API Permission
+        public const string LookUps_ProductVariants = "LookUps.ProductVariants";
+        public const string LookUps_ProductVariants_Page = "LookUps.ProductVariants.Pages";
+        public const string LookUps_ProductVariants_Create = "LookUps.ProductVariants.Create";
+        public const string LookUps_ProductVariants_Update = "LookUps.ProductVariants.Update";
+        public const string LookUps_ProductVariants_Delete = "LookUps.ProductVariants.Delete";
+
+        // Size API Permission
+        public const string LookUps_Size = "LookUps.Size";
+        public const string LookUps_Size_Page = "LookUps.Size.Pages";
+        public const string LookUps_Size_Create = "LookUps.Size.Create";
+        public const string LookUps_Size_Update = "LookUps.Size.Update";
+        public const string LookUps_Size_Delete = "LookUps.Size.Delete";
+
+        // ProductParameters API Permission
+        public const string LookUps_ProductParameters = "LookUps.ProductParameters";
+        public const string LookUps_ProductParameters_Page = "LookUps.ProductParameters.Pages";
+        public const string LookUps_ProductParameters_Create = "LookUps.ProductParameters.Create";
+        public const string LookUps_ProductParameters_Update = "LookUps.ProductParameters.Update";
+        public const string LookUps_ProductParameters_Delete = "LookUps.ProductParameters.Delete";
     }
 
    

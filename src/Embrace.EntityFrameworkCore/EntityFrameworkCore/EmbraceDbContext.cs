@@ -22,5 +22,9 @@ namespace Embrace.EntityFrameworkCore
         public DbSet<UniqueNameAndDateInfo> UniqueNameAndDateInfo { get; set; }
         public DbSet<MenstruationDetailsInfo> MenstruationDetailsInfo { get; set; }
         public DbSet<SubCategoryAndDateInfo> SubCategoryAndDateInfo { get; set; }
+        public DbSet<ProductCategoriesInfo> ProductCategoriesInfo { get; set; }
+        public DbSet<ProductVariantsInfo> ProductVariantsInfo { get; set; }
+        public DbSet<SizeInfo> SizeInfo { get; set; }
+        public DbSet<ProductParametersInfo> ProductParametersInfo { get; set; }
     }
 }
