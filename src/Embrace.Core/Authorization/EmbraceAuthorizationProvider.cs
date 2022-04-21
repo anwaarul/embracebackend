@@ -77,6 +77,34 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_ProductParameters_Update, L("UpdateProductParameters"));
             context.CreatePermission(PermissionNames.LookUps_ProductParameters_Delete, L("DeleteProductParameters"));
 
+            //ProductType Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductType, L("ProductType"));
+            context.CreatePermission(PermissionNames.LookUps_ProductType_Page, L("PageProductType"));
+            context.CreatePermission(PermissionNames.LookUps_ProductType_Create, L("CreateProductType"));
+            context.CreatePermission(PermissionNames.LookUps_ProductType_Update, L("UpdateProductType"));
+            context.CreatePermission(PermissionNames.LookUps_ProductType_Delete, L("DeleteProductType"));
+
+            //ProductParameterVariantAllocation Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterVariantAllocation, L("ProductParameterVariantAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterVariantAllocation_Page, L("PageProductParameterVariantAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterVariantAllocation_Create, L("CreateProductParameterVariantAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterVariantAllocation_Update, L("UpdateProductParameterVariantAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterVariantAllocation_Delete, L("DeleteProductParameterVariantAllocation"));
+
+            //ProductParameterSizeAllocation Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterSizeAllocation, L("ProductParameterSizeAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterSizeAllocation_Page, L("PageProductParameterSizeAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterSizeAllocation_Create, L("CreateProductParameterSizeAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterSizeAllocation_Update, L("UpdateProductParameterSizeAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductParameterSizeAllocation_Delete, L("DeleteProductParameterSizeAllocation"));
+
+            //UserProductAllocation Permission
+            context.CreatePermission(PermissionNames.LookUps_UserProductAllocation, L("UserProductAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Page, L("PageUserProductAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Create, L("CreateUserProductAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Update, L("UpdateUserProductAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Delete, L("DeleteUserProductAllocation"));
+
         }
 
         private static ILocalizableString L(string name)

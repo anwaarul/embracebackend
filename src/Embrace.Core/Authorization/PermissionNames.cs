@@ -69,6 +69,34 @@
         public const string LookUps_ProductParameters_Create = "LookUps.ProductParameters.Create";
         public const string LookUps_ProductParameters_Update = "LookUps.ProductParameters.Update";
         public const string LookUps_ProductParameters_Delete = "LookUps.ProductParameters.Delete";
+
+        // ProductType API Permission
+        public const string LookUps_ProductType = "LookUps.ProductType";
+        public const string LookUps_ProductType_Page = "LookUps.ProductType.Pages";
+        public const string LookUps_ProductType_Create = "LookUps.ProductType.Create";
+        public const string LookUps_ProductType_Update = "LookUps.ProductType.Update";
+        public const string LookUps_ProductType_Delete = "LookUps.ProductType.Delete";
+
+        // ProductParameterVariantAllocation API Permission
+        public const string LookUps_ProductParameterVariantAllocation = "LookUps.ProductParameterVariantAllocation";
+        public const string LookUps_ProductParameterVariantAllocation_Page = "LookUps.ProductParameterVariantAllocation.Pages";
+        public const string LookUps_ProductParameterVariantAllocation_Create = "LookUps.ProductParameterVariantAllocation.Create";
+        public const string LookUps_ProductParameterVariantAllocation_Update = "LookUps.ProductParameterVariantAllocation.Update";
+        public const string LookUps_ProductParameterVariantAllocation_Delete = "LookUps.ProductParameterVariantAllocation.Delete";
+
+        // ProductParameterSizeAllocation API Permission
+        public const string LookUps_ProductParameterSizeAllocation = "LookUps.ProductParameterSizeAllocation";
+        public const string LookUps_ProductParameterSizeAllocation_Page = "LookUps.ProductParameterSizeAllocation.Pages";
+        public const string LookUps_ProductParameterSizeAllocation_Create = "LookUps.ProductParameterSizeAllocation.Create";
+        public const string LookUps_ProductParameterSizeAllocation_Update = "LookUps.ProductParameterSizeAllocation.Update";
+        public const string LookUps_ProductParameterSizeAllocation_Delete = "LookUps.ProductParameterSizeAllocation.Delete";
+
+        // UserProductAllocation API Permission
+        public const string LookUps_UserProductAllocation = "LookUps.UserProductAllocation";
+        public const string LookUps_UserProductAllocation_Page = "LookUps.UserProductAllocation.Pages";
+        public const string LookUps_UserProductAllocation_Create = "LookUps.UserProductAllocation.Create";
+        public const string LookUps_UserProductAllocation_Update = "LookUps.UserProductAllocation.Update";
+        public const string LookUps_UserProductAllocation_Delete = "LookUps.UserProductAllocation.Delete";
     }
 
    

@@ -54,13 +54,14 @@ namespace Embrace.Entites.ProductParameters
             var prevdataProductParameters = _productParametersRepository.GetAll().Where(x => x.Id == input.Id && x.TenantId == AbpSession.TenantId).FirstOrDefault();
            
             var data = ObjectMapper.Map<ProductParametersInfo>(prevdataProductParameters);
-            data.ProductType = input.ProductType;
+            data.ProductTypeId = input.ProductTypeId;
             data.SKU = input.SKU;
             data.ProductName = input.ProductName;
             data.Description = input.Description;
             data.Price = input.Price;
             data.SalePrice = input.SalePrice;
             data.ProductImage = input.ProductImage;
+            data.Quantity = input.Quantity;
             data.LastModificationTime = DateTime.Now;
             data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
 
@@ -92,30 +93,7 @@ namespace Embrace.Entites.ProductParameters
             var result = new PagedResultDto<ProductParametersDto>(query.Count(), ObjectMapper.Map<List<ProductParametersDto>>(statelist));
             return Task.FromResult(result);
         }
-        public PagedResultDto<ProductParametersDto> GetAllProductParametersFilter(PagedResultRequestDto input, string filter)
-        {
-
-            if (filter == null)
-            {
-                filter = "";
-            }
-
-            var dataProductParameters = _productParametersRepository.GetAll().Where(x => x.ProductName.Contains(filter) && x.TenantId == AbpSession.TenantId).ToList();
-            var statelist = dataProductParameters.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-
-            var result = new PagedResultDto<ProductParametersDto>(statelist.Count(), ObjectMapper.Map<List<ProductParametersDto>>(statelist));
-            return result;
-        }
-        public PagedResultDto<ProductParametersDto> GetAllProductParametersSearchFilter(PagedProductParametersResultRequestExtendedDto input)
-        {
-            var query = _productParametersRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId)
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.ProductName.ToLower().Contains(input.Keyword.ToLower()))
-                .ToList();
-
-            var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var result = new PagedResultDto<ProductParametersDto>(query.Count, ObjectMapper.Map<List<ProductParametersDto>>(statelist));
-            return result;
-        }
+        
         
     }
 }

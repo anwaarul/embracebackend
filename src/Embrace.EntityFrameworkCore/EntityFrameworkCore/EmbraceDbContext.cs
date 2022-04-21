@@ -26,5 +26,10 @@ namespace Embrace.EntityFrameworkCore
         public DbSet<ProductVariantsInfo> ProductVariantsInfo { get; set; }
         public DbSet<SizeInfo> SizeInfo { get; set; }
         public DbSet<ProductParametersInfo> ProductParametersInfo { get; set; }
+        public DbSet<UserProductAllocationInfo> UserProductAllocationInfo { get; set; }
+        public DbSet<ProductTypeInfo> ProductTypeInfo { get; set; }
+        public DbSet<ProductParameterSizeAllocationInfo> ProductParameterSizeAllocationInfo { get; set; }
+        public DbSet<ProductParameterVariantAllocationInfo> ProductParameterVariantAllocationInfo { get; set; }
+
     }
 }

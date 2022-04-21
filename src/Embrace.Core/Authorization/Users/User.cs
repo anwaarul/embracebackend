@@ -7,6 +7,7 @@ namespace Embrace.Authorization.Users
 {
     public class User : AbpUser<User>
     {
+        public string MyProperty { get; set; }
         public const string DefaultPassword = "123qwe";
 
         public static string CreateRandomPassword()

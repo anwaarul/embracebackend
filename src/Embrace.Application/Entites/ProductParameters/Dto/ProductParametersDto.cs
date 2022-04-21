@@ -11,12 +11,14 @@ namespace Embrace.Entities.ProductParameters.Dto
     [AutoMapTo(typeof(ProductParametersInfo)), AutoMapFrom(typeof(ProductParametersInfo))]
     public class ProductParametersDto : EntityDto<long>
     {
-        public string ProductType { get; set; }
+        public long ProductTypeId { get; set; }
         public string SKU { get; set; }
         public string ProductName { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
         public double SalePrice { get; set; }
         public string ProductImage { get; set; }
+        public long Quantity { get; set; }
+
     }
 }
