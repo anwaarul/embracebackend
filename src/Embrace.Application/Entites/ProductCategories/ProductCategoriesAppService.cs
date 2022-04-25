@@ -21,13 +21,20 @@ namespace Embrace.Entites.ProductCategories
     public class ProductCategoriesAppService : AsyncCrudAppService<ProductCategoriesInfo, ProductCategoriesDto, long, PagedResultRequestDto, ProductCategoriesDto, ProductCategoriesDto>, IProductCategoriesAppService
     {
         private readonly IRepository<ProductCategoriesInfo, long> _productCategoriesRepository;
+        private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
+        private readonly IRepository<ProductVariantsInfo, long> _productVariantsRepository;
         private readonly IPermissionManager _permissionManager;
-        public ProductCategoriesAppService(IRepository<ProductCategoriesInfo, long> _repository,
+        public ProductCategoriesAppService(
+            IRepository<ProductCategoriesInfo, long> _repository,
+            IRepository<ProductParametersInfo, long> productParametersRepository,
+            IRepository<ProductVariantsInfo, long> productVariantsRepository,
 
             IPermissionManager _Manager) : base(_repository)
         {
 
             _productCategoriesRepository = _repository;
+            _productParametersRepository = productParametersRepository;
+            _productVariantsRepository = productVariantsRepository;
             _permissionManager = _Manager;
         }
 
@@ -124,6 +131,7 @@ namespace Embrace.Entites.ProductCategories
             var result = new PagedResultDto<ProductCategoriesDto>(query.Count, ObjectMapper.Map<List<ProductCategoriesDto>>(statelist));
             return result;
         }
+
         
     }
 }

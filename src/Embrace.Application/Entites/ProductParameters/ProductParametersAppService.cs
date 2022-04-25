@@ -21,13 +21,18 @@ namespace Embrace.Entites.ProductParameters
     public class ProductParametersAppService : AsyncCrudAppService<ProductParametersInfo, ProductParametersDto, long, PagedResultRequestDto, ProductParametersDto, ProductParametersDto>, IProductParametersAppService
     {
         private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
+        private readonly IRepository<ProductCategoriesInfo, long> _productCategoriesRepository;
         private readonly IPermissionManager _permissionManager;
-        public ProductParametersAppService(IRepository<ProductParametersInfo, long> _repository,
+        public ProductParametersAppService(
+            IRepository<ProductParametersInfo, long> _repository,
+            IRepository<ProductCategoriesInfo, long> productCategoriesRepository,
+
 
             IPermissionManager _Manager) : base(_repository)
         {
 
             _productParametersRepository = _repository;
+            _productCategoriesRepository = productCategoriesRepository;
             _permissionManager = _Manager;
         }
 
@@ -93,7 +98,6 @@ namespace Embrace.Entites.ProductParameters
             var result = new PagedResultDto<ProductParametersDto>(query.Count(), ObjectMapper.Map<List<ProductParametersDto>>(statelist));
             return Task.FromResult(result);
         }
-        
-        
+
     }
 }

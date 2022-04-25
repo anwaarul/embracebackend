@@ -105,6 +105,13 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Update, L("UpdateUserProductAllocation"));
             context.CreatePermission(PermissionNames.LookUps_UserProductAllocation_Delete, L("DeleteUserProductAllocation"));
 
+            //ProductImageAllocation Permission
+            context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation, L("ProductImageAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Page, L("PageProductImageAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Create, L("CreateProductImageAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Update, L("UpdateProductImageAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Delete, L("DeleteProductImageAllocation"));
+
         }
 
         private static ILocalizableString L(string name)

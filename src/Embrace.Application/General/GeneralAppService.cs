@@ -21,6 +21,8 @@ namespace Embrace.General
         private readonly IRepository<SubCategoryImageAllocationInfo, long> _subCategoryImageAllocationRepository;
         private readonly IRepository<MenstruationDetailsInfo, long> _menstruationDetailsRepository;
         private readonly IRepository<SubCategoryAndDateInfo, long> _subCategoryAndDateRepository;
+        private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
+        private readonly IRepository<ProductCategoriesInfo, long> _productCategoriesRepository;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -31,7 +33,9 @@ namespace Embrace.General
         IRepository<MenstruationDetailsInfo, long> menstruationDetailsRepository,
         IRepository<SubCategoryImageAllocationInfo, long> subCategoryImageAllocationRepository,
         IRepository<SubCategoryInfo, long> subCategoryRepository,
-        IRepository<CategoryInfo, long> categoryRepository
+        IRepository<CategoryInfo, long> categoryRepository,
+        IRepository<ProductParametersInfo, long> productParametersRepository,
+        IRepository<ProductCategoriesInfo, long> productCategoriesRepository
 
           ) : base()
         {
@@ -42,6 +46,8 @@ namespace Embrace.General
             _categoryRepository = categoryRepository;
             _subCategoryRepository = subCategoryRepository;
             _uniqueNameAndDateInfoRepository = uniqueNameAndDateInfoRepository;
+            _productParametersRepository = productParametersRepository;
+            _productCategoriesRepository = productCategoriesRepository;
 
         }
 
@@ -377,6 +383,30 @@ namespace Embrace.General
 
             var result = new PagedResultDto<GetAllSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryDto>>(query));
             return result;
+        }
+        public PagedResultDto<GetAllProductParametersDto> GetAllProductsByCategoryName(PagedResultRequestDto input, string CategoryName)
+        {
+            var categoryData = _productCategoriesRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Name == CategoryName).FirstOrDefault();
+            if( categoryData == null)
+            {
+                throw new UserFriendlyException("no such Category found");
+            }
+            var query = from p in _productParametersRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.ProductTypeId == categoryData.Id)
+                        join pc in _productCategoriesRepository.GetAll() on p.ProductTypeId equals pc.Id
+
+                        select new GetAllProductParametersDto()
+                        {
+                            Id = p.Id,
+                            ProductName = p.ProductName,
+                            ProductImage = p.ProductImage,
+                            Price = p.Price,
+                        };
+
+            //var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<GetAllProductParametersDto>(query.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(query));
+
+            return result;
+
         }
     }
 }

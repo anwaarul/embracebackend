@@ -16,7 +16,7 @@ using Embrace.Entites.SubCategoryImageAllocation.Dto;
 using Embrace.Entites.SubCategoryImageAllocation;
 using System.IO;
 
-namespace madamporter.Entites.SubCategoryImageAllocation
+namespace Embrace.Entites.SubCategoryImageAllocation
 {
     [AbpAuthorize(PermissionNames.LookUps_SubCategoryImageAllocation)]
     public class SubCategoryImageAllocationAppService : AsyncCrudAppService<SubCategoryImageAllocationInfo, SubCategoryImageAllocationDto, long, PagedResultRequestDto, SubCategoryImageAllocationDto, SubCategoryImageAllocationDto>, ISubCategoryImageAllocationAppService

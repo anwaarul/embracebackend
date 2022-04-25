@@ -97,6 +97,13 @@
         public const string LookUps_UserProductAllocation_Create = "LookUps.UserProductAllocation.Create";
         public const string LookUps_UserProductAllocation_Update = "LookUps.UserProductAllocation.Update";
         public const string LookUps_UserProductAllocation_Delete = "LookUps.UserProductAllocation.Delete";
+
+        // ProductImageAllocation API Permission
+        public const string LookUps_ProductImageAllocation = "LookUps.ProductImageAllocation";
+        public const string LookUps_ProductImageAllocation_Page = "LookUps.ProductImageAllocation.Pages";
+        public const string LookUps_ProductImageAllocation_Create = "LookUps.ProductImageAllocation.Create";
+        public const string LookUps_ProductImageAllocation_Update = "LookUps.ProductImageAllocation.Update";
+        public const string LookUps_ProductImageAllocation_Delete = "LookUps.ProductImageAllocation.Delete";
     }
 
    
