@@ -50,106 +50,106 @@ namespace Embrace.Entites.ProductImageAllocation
             return data;
 
         }
-        //public async Task<CreateProductImageAllocationDto> CreateSubCategoryImageAllocation(CreateProductImageAllocationDto input)
-        //{
-        //    ProductImageAllocationInfo imagedata = new ProductImageAllocationInfo();
-        //    var subcategory = _productParametersRepository.GetAll().Where(x => x.Id == input.ProductParameterId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-        //    if (subcategory == null)
-        //    {
-        //        throw new UserFriendlyException("SubCategory not found.");
-        //    }
-        //    foreach (var imageBase in input.BulkImage)
-        //    {
-        //        if (imageBase.ImageUrl != null)
-        //        {
+        public async Task<CreateProductImagesAllocationDto> CreateProductImageAllocation(CreateProductImagesAllocationDto input)
+        {
+            ProductImageAllocationInfo imagedata = new ProductImageAllocationInfo();
+            var product = _productParametersRepository.GetAll().Where(x => x.Id == input.ProductParameterId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            if (product == null)
+            {
+                throw new UserFriendlyException("SubCategory not found.");
+            }
+            foreach (var imageBase in input.BulkImage)
+            {
+                if (imageBase.BaseUrl != null)
+                {
 
-        //            Uri uriResult;
-        //            bool uRL = Uri.TryCreate(imageBase.ImageUrl, UriKind.Absolute, out uriResult)
-        //                && uriResult.Scheme == Uri.UriSchemeHttp;
-        //            if (uRL == true)
-        //            {
-        //                imagedata = new ProductImageAllocationInfo
-        //                {
-        //                    ProductParameterId = subcategory.Id,
+                    Uri uriResult;
+                    bool uRL = Uri.TryCreate(imageBase.BaseUrl, UriKind.Absolute, out uriResult)
+                        && uriResult.Scheme == Uri.UriSchemeHttp;
+                    if (uRL == true)
+                    {
+                        imagedata = new ProductImageAllocationInfo
+                        {
+                            ProductParameterId = product.Id,
 
-        //                    ImageUrl = imageBase.ImageUrl,
-        //                    CreationTime = DateTime.Now,
-        //                    CreatorUserId = Convert.ToInt32(AbpSession.UserId),
-        //                    TenantId = Convert.ToInt32(AbpSession.TenantId),
-        //                    IsActive = true
+                            ImageUrl = imageBase.BaseUrl,
+                            CreationTime = DateTime.Now,
+                            CreatorUserId = Convert.ToInt32(AbpSession.UserId),
+                            TenantId = Convert.ToInt32(AbpSession.TenantId),
+                            IsActive = true
 
-        //                };
-        //                await _productImageAllocationRepository.InsertAsync(imagedata);
-        //                CurrentUnitOfWork.SaveChanges();
+                        };
+                        await _productImageAllocationRepository.InsertAsync(imagedata);
+                        CurrentUnitOfWork.SaveChanges();
 
-        //            }
-        //            else
-        //            {
-        //                var imgUrl = "";
+                    }
+                    else
+                    {
+                        var imgUrl = "";
 
-        //                imgUrl = SaveImage(imageBase.ImageUrl);
+                        imgUrl = SaveImage(imageBase.BaseUrl);
 
 
-        //                imagedata = new ProductImageAllocationInfo
-        //                {
-        //                    ProductParameterId = subcategory.Id,
+                        imagedata = new ProductImageAllocationInfo
+                        {
+                            ProductParameterId = product.Id,
 
-        //                    ImageUrl = imgUrl,
-        //                    CreationTime = DateTime.Now,
-        //                    CreatorUserId = Convert.ToInt32(AbpSession.UserId),
-        //                    TenantId = Convert.ToInt32(AbpSession.TenantId),
-        //                    IsActive = true
+                            ImageUrl = imgUrl,
+                            CreationTime = DateTime.Now,
+                            CreatorUserId = Convert.ToInt32(AbpSession.UserId),
+                            TenantId = Convert.ToInt32(AbpSession.TenantId),
+                            IsActive = true
 
-        //                };
-        //                await _productImageAllocationRepository.InsertAsync(imagedata);
-        //                CurrentUnitOfWork.SaveChanges();
+                        };
+                        await _productImageAllocationRepository.InsertAsync(imagedata);
+                        CurrentUnitOfWork.SaveChanges();
 
-        //            }
+                    }
 
-        //        }
-        //    }
-        //    var data = ObjectMapper.Map<CreateProductImageAllocationDto>(imagedata);
-        //    return data;
-        //}
-        //protected string SaveImage(string ImgStr)
-        //{
-        //    // create path
-        //    String folder = Path.Combine(
-        //    Directory.GetCurrentDirectory(), "wwwroot\\UserImage\\");
-        //    DirectoryInfo di;
-        //    if (!Directory.Exists(folder))
-        //    {
-        //        // Try to create the directory.
-        //        try
-        //        {
+                }
+            }
+            var data = ObjectMapper.Map<CreateProductImagesAllocationDto>(imagedata);
+            return data;
+        }
+        protected string SaveImage(string ImgStr)
+        {
+            // create path
+            String folder = Path.Combine(
+            Directory.GetCurrentDirectory(), "wwwroot\\ProductImage\\");
+            DirectoryInfo di;
+            if (!Directory.Exists(folder))
+            {
+                // Try to create the directory.
+                try
+                {
 
-        //            di = Directory.CreateDirectory(folder);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            throw new UserFriendlyException(ex.Message);
-        //        }
-        //    }
+                    di = Directory.CreateDirectory(folder);
+                }
+                catch (Exception ex)
+                {
+                    throw new UserFriendlyException(ex.Message);
+                }
+            }
 
-        //    //Check if directory exist
-        //    if (!System.IO.Directory.Exists(folder))
-        //    {
-        //        System.IO.Directory.CreateDirectory(folder); //Create directory if it doesn't exist
-        //    }
+            //Check if directory exist
+            if (!System.IO.Directory.Exists(folder))
+            {
+                System.IO.Directory.CreateDirectory(folder); //Create directory if it doesn't exist
+            }
 
-        //    string imageName = Guid.NewGuid().ToString() + ".jpg";
+            string imageName = Guid.NewGuid().ToString() + ".jpg";
 
-        //    //set the image path
-        //    string imgPath = Path.Combine(folder, imageName);
+            //set the image path
+            string imgPath = Path.Combine(folder, imageName);
 
-        //    byte[] imageBytes = Convert.FromBase64String(ImgStr);
+            byte[] imageBytes = Convert.FromBase64String(ImgStr);
 
-        //    File.WriteAllBytes(imgPath, imageBytes);
+            File.WriteAllBytes(imgPath, imageBytes);
 
-        //    return "http://54.37.97.142:81/" + "/" + "UserImage" + "/" + "/" + imageName;
-        //}
-        
- 
+            return "http://54.37.97.142:81/" + "/" + "ProductImage" + "/" + "/" + imageName;
+        }
+
+
         [AbpAuthorize(PermissionNames.LookUps_ProductImageAllocation_Update)]
         public override async Task<ProductImageAllocationDto> UpdateAsync(ProductImageAllocationDto input)
         {

@@ -8,7 +8,7 @@ namespace Embrace.Entities
 {
     public class ProductParametersInfo : EmbraceProjBaseEntity
     {
-        public long ProductTypeId { get; set; }
+        public long ProductCategoryId { get; set; }
         public string SKU { get; set; }
         public string ProductName { get; set; }
         public string Description { get; set; }

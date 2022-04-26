@@ -1657,7 +1657,7 @@ namespace Embrace.Migrations
                     b.ToTable("MenstruationDetailsInfo");
                 });
 
-            modelBuilder.Entity("Embrace.Entities.ProductCategoriesInfo", b =>
+            modelBuilder.Entity("Embrace.Entities.ProductCategoryInfo", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1696,7 +1696,7 @@ namespace Embrace.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductCategoriesInfo");
+                    b.ToTable("ProductCategoryInfo");
                 });
 
             modelBuilder.Entity("Embrace.Entities.ProductImageAllocationInfo", b =>
@@ -1871,14 +1871,14 @@ namespace Embrace.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
+                    b.Property<long>("ProductCategoryId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("ProductImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("ProductTypeId")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("Quantity")
                         .HasColumnType("bigint");
@@ -1895,48 +1895,6 @@ namespace Embrace.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductParametersInfo");
-                });
-
-            modelBuilder.Entity("Embrace.Entities.ProductTypeInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductTypeInfo");
                 });
 
             modelBuilder.Entity("Embrace.Entities.ProductVariantsInfo", b =>

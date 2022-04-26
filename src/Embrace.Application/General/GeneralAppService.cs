@@ -22,23 +22,42 @@ namespace Embrace.General
         private readonly IRepository<MenstruationDetailsInfo, long> _menstruationDetailsRepository;
         private readonly IRepository<SubCategoryAndDateInfo, long> _subCategoryAndDateRepository;
         private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
-        private readonly IRepository<ProductCategoriesInfo, long> _productCategoriesRepository;
+        private readonly IRepository<CategoryInfo, long> _categoriesRepository;
+        private readonly IRepository<ProductVariantsInfo, long> _productVariantsRepository;
+        private readonly IRepository<ProductParameterVariantAllocationInfo, long> _productParameterVariantAllocationRepository;
+        private readonly IRepository<ProductCategoryInfo, long> _productCategoryRepository;
+        private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
+        private readonly IRepository<SizeInfo, long> _sizeRepository;
+        private readonly IRepository<ProductParameterSizeAllocationInfo, long> _productParameterSizeAllocationRepository;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
         IRepository<User, long> repository,
         UserManager userManager,
+        IRepository<ProductVariantsInfo, long> productVariantsRepository,
+        IRepository<SizeInfo, long> sizeRepository,
+       IRepository<ProductParameterSizeAllocationInfo, long> productParameterSizeAllocationRepository,
+
+        IRepository<ProductImageAllocationInfo, long> productImageAllocationRepository,
+        IRepository<ProductCategoryInfo, long> productCategoryRepository,
+        IRepository<ProductParameterVariantAllocationInfo, long> productParameterVariantAllocationRepository,
+
         IRepository<UniqueNameAndDateInfo, long> uniqueNameAndDateInfoRepository,
         IRepository<SubCategoryAndDateInfo, long> subCategoryAndDateRepository,
         IRepository<MenstruationDetailsInfo, long> menstruationDetailsRepository,
         IRepository<SubCategoryImageAllocationInfo, long> subCategoryImageAllocationRepository,
         IRepository<SubCategoryInfo, long> subCategoryRepository,
         IRepository<CategoryInfo, long> categoryRepository,
-        IRepository<ProductParametersInfo, long> productParametersRepository,
-        IRepository<ProductCategoriesInfo, long> productCategoriesRepository
+        IRepository<ProductParametersInfo, long> productParametersRepository
 
           ) : base()
         {
+            _productParameterSizeAllocationRepository = productParameterSizeAllocationRepository;
+            _sizeRepository = sizeRepository;
+            _productParameterVariantAllocationRepository = productParameterVariantAllocationRepository;
+            _productCategoryRepository = productCategoryRepository;
+            _productImageAllocationRepository = productImageAllocationRepository;
+            _productVariantsRepository = productVariantsRepository;
             _userManager = userManager;
             _subCategoryAndDateRepository = subCategoryAndDateRepository;
             _subCategoryImageAllocationRepository = subCategoryImageAllocationRepository;
@@ -47,7 +66,6 @@ namespace Embrace.General
             _subCategoryRepository = subCategoryRepository;
             _uniqueNameAndDateInfoRepository = uniqueNameAndDateInfoRepository;
             _productParametersRepository = productParametersRepository;
-            _productCategoriesRepository = productCategoriesRepository;
 
         }
 
@@ -384,26 +402,123 @@ namespace Embrace.General
             var result = new PagedResultDto<GetAllSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryDto>>(query));
             return result;
         }
-        public PagedResultDto<GetAllProductParametersDto> GetAllProductsByCategoryName(PagedResultRequestDto input, string CategoryName)
+        public PagedResultDto<GetAllProductParametersDto> GetAllProductsByCategoryName(PagedResultRequestDto input, string categoryName)
         {
-            var categoryData = _productCategoriesRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Name == CategoryName).FirstOrDefault();
-            if( categoryData == null)
+            List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+            List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
+            List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+            
+            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Name == categoryName.ToLower()).FirstOrDefault();
+            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
+            
+            foreach (var item in productvariant)
             {
-                throw new UserFriendlyException("no such Category found");
+                var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                {
+
+                    VariantId = variants.Id,
+                    VariantName = variants.Name
+                      
+                };
+                productvariants.Add(getAllvaranits);
             }
-            var query = from p in _productParametersRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.ProductTypeId == categoryData.Id)
-                        join pc in _productCategoriesRepository.GetAll() on p.ProductTypeId equals pc.Id
+            
+            GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
+            {
 
-                        select new GetAllProductParametersDto()
-                        {
-                            Id = p.Id,
-                            ProductName = p.ProductName,
-                            ProductImage = p.ProductImage,
-                            Price = p.Price,
-                        };
+                Id = productparameters.Id,
+                ProductName = productparameters.ProductName,
+                ProductImage = productparameters.ProductImage,
+                Description = productparameters.Description,
+                ProductCategoryId = productCategoryData.Id,
+                ProductCategoryName = productCategoryData.Name,
+                ProductVariants = productvariants,
+               
+                Price = productparameters.Price,
+            };
+            productParametersDtos.Add(getAllProduct);
+           
+            var result = new PagedResultDto<GetAllProductParametersDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(productParametersDtos));
 
-            //var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var result = new PagedResultDto<GetAllProductParametersDto>(query.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(query));
+            return result;
+
+        }
+        public PagedResultDto<GetAllProductParametersDetailsDto> GetAllProductsDetailsById(PagedResultRequestDto input, long productId)
+        {
+            List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+            List<SizeInfo> sizeInfos = new List<SizeInfo>();
+            List<ProductImageAllocationInfo> productimage = new List<ProductImageAllocationInfo>();
+            List<GetAllProductParametersDetailsDto> productParametersDtos = new List<GetAllProductParametersDetailsDto>();
+            List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+            List<GetAllProductImageDto> getAllProductImageDtos = new List<GetAllProductImageDto>();
+            List<GetAllProductSizeDto> getAllProductSizeDtos = new List<GetAllProductSizeDto>();
+            //cache
+            sizeInfos = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productimage = _productImageAllocationRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            
+            var products = _productParametersRepository.GetAll().Where(x => x.Id == productId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Id == products.ProductCategoryId).FirstOrDefault();
+            var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == products.Id).ToList();
+            var allocatedImages = _productImageAllocationRepository.GetAll().Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).ToList();
+            var sizealloction = _productParameterSizeAllocationRepository.GetAll().Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).ToList();
+            foreach (var item in allocatedImages)
+            {
+                var getimages = productimage.Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                GetAllProductImageDto getAllimages = new GetAllProductImageDto()
+                {
+
+                    ProductId = getimages.ProductParameterId,
+                    ImageUrl = getimages.ImageUrl
+
+                };
+                getAllProductImageDtos.Add(getAllimages);
+            }
+            foreach (var item in sizealloction)
+            {
+                var getsize = sizeInfos.Where(x => x.Id == item.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                GetAllProductSizeDto getAllsize = new GetAllProductSizeDto()
+                {
+
+                    SizeId = getsize.Id,
+                    SizeName = getsize.Name
+
+                };
+                getAllProductSizeDtos.Add(getAllsize);
+            }
+            foreach (var item in productvariant)
+            {
+                var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                {
+
+                    VariantId = variants.Id,
+                    VariantName = variants.Name
+
+                };
+                productvariants.Add(getAllvaranits);
+            }
+
+            GetAllProductParametersDetailsDto getAllProduct = new GetAllProductParametersDetailsDto()
+            {
+
+                Id = products.Id,
+                ProductName = products.ProductName,
+                ProductImage = products.ProductImage,
+                Description = products.Description,
+                ProductCategoryId = productCategoryData.Id,
+                ProductCategoryName = productCategoryData.Name,
+                ProductVariants = productvariants,
+                Images = getAllProductImageDtos,
+                Size = getAllProductSizeDtos,
+                Price = products.Price,
+            };
+            productParametersDtos.Add(getAllProduct);
+
+            var result = new PagedResultDto<GetAllProductParametersDetailsDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDetailsDto>>(productParametersDtos));
 
             return result;
 

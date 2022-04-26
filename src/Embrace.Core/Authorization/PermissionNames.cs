@@ -104,6 +104,13 @@
         public const string LookUps_ProductImageAllocation_Create = "LookUps.ProductImageAllocation.Create";
         public const string LookUps_ProductImageAllocation_Update = "LookUps.ProductImageAllocation.Update";
         public const string LookUps_ProductImageAllocation_Delete = "LookUps.ProductImageAllocation.Delete";
+        
+        // ProductCategory API Permission
+        public const string LookUps_ProductCategory = "LookUps.ProductCategory";
+        public const string LookUps_ProductCategory_Page = "LookUps.ProductCategory.Pages";
+        public const string LookUps_ProductCategory_Create = "LookUps.ProductCategory.Create";
+        public const string LookUps_ProductCategory_Update = "LookUps.ProductCategory.Update";
+        public const string LookUps_ProductCategory_Delete = "LookUps.ProductCategory.Delete";
     }
 
    

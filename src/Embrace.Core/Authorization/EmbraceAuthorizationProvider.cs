@@ -19,7 +19,14 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_Category_Page, L("PageCategory"));
             context.CreatePermission(PermissionNames.LookUps_Category_Create, L("CreateCategory"));
             context.CreatePermission(PermissionNames.LookUps_Category_Update, L("UpdateCategory"));
-            context.CreatePermission(PermissionNames.LookUps_Category_Delete, L("DeleteCategory"));
+            context.CreatePermission(PermissionNames.LookUps_Category_Delete, L("DeleteCategory")); 
+            //ProductCategory Permission
+
+            context.CreatePermission(PermissionNames.LookUps_ProductCategory, L("ProductCategory"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategory_Page, L("PageProductCategory"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategory_Create, L("CreateProductCategory"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategory_Update, L("UpdateProductCategory"));
+            context.CreatePermission(PermissionNames.LookUps_ProductCategory_Delete, L("DeleteProductCategory"));
             //CategorySubCategoryAllocation Permission
 
             context.CreatePermission(PermissionNames.LookUps_CategorySubCategoryAllocation, L("CategorySubCategoryAllocation"));
