@@ -19,7 +19,36 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_Category_Page, L("PageCategory"));
             context.CreatePermission(PermissionNames.LookUps_Category_Create, L("CreateCategory"));
             context.CreatePermission(PermissionNames.LookUps_Category_Update, L("UpdateCategory"));
-            context.CreatePermission(PermissionNames.LookUps_Category_Delete, L("DeleteCategory")); 
+            context.CreatePermission(PermissionNames.LookUps_Category_Delete, L("DeleteCategory"));
+            //SubscriptionType Permission
+
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionType, L("SubscriptionType"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionType_Page, L("PageSubscriptionType"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionType_Create, L("CreateSubscriptionType"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionType_Update, L("UpdateSubscriptionType"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionType_Delete, L("DeleteSubscriptionType"));
+            //SubscriptionOrderPayementAllocation Permission
+
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionOrderPayementAllocation, L("SubscriptionOrderPayementAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionOrderPayementAllocation_Page, L("PageSubscriptionOrderPayementAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionOrderPayementAllocation_Create, L("CreateSubscriptionOrderPayementAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionOrderPayementAllocation_Update, L("UpdateSubscriptionOrderPayementAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_SubscriptionOrderPayementAllocation_Delete, L("DeleteSubscriptionOrderPayementAllocation"));
+            //Subscription Permission
+
+            context.CreatePermission(PermissionNames.LookUps_Subscription, L("Subscription"));
+            context.CreatePermission(PermissionNames.LookUps_Subscription_Page, L("PageSubscription"));
+            context.CreatePermission(PermissionNames.LookUps_Subscription_Create, L("CreateSubscription"));
+            context.CreatePermission(PermissionNames.LookUps_Subscription_Update, L("UpdateSubscription"));
+            context.CreatePermission(PermissionNames.LookUps_Subscription_Delete, L("DeleteSubscription"));
+
+            //OrderPlacement Permission
+
+            context.CreatePermission(PermissionNames.LookUps_OrderPlacement, L("OrderPlacement"));
+            context.CreatePermission(PermissionNames.LookUps_OrderPlacement_Page, L("PageOrderPlacement"));
+            context.CreatePermission(PermissionNames.LookUps_OrderPlacement_Create, L("CreateOrderPlacement"));
+            context.CreatePermission(PermissionNames.LookUps_OrderPlacement_Update, L("UpdateOrderPlacement"));
+            context.CreatePermission(PermissionNames.LookUps_OrderPlacement_Delete, L("DeleteOrderPlacement"));
             //ProductCategory Permission
 
             context.CreatePermission(PermissionNames.LookUps_ProductCategory, L("ProductCategory"));

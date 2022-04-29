@@ -16,6 +16,37 @@
         public const string LookUps_UsersDetails_Create = "LookUps.UsersDetails.Create";
         public const string LookUps_UsersDetails_Update = "LookUps.UsersDetails.Update";
         public const string LookUps_UsersDetails_Delete = "LookUps.UsersDetails.Delete";
+
+
+        // SubscriptionType API Permission
+        public const string LookUps_SubscriptionType = "LookUps.SubscriptionType";
+        public const string LookUps_SubscriptionType_Page = "LookUps.SubscriptionType.Pages";
+        public const string LookUps_SubscriptionType_Create = "LookUps.SubscriptionType.Create";
+        public const string LookUps_SubscriptionType_Update = "LookUps.SubscriptionType.Update";
+        public const string LookUps_SubscriptionType_Delete = "LookUps.SubscriptionType.Delete";
+
+
+        // Subscription API Permission
+        public const string LookUps_Subscription = "LookUps.Subscription";
+        public const string LookUps_Subscription_Page = "LookUps.Subscription.Pages";
+        public const string LookUps_Subscription_Create = "LookUps.Subscription.Create";
+        public const string LookUps_Subscription_Update = "LookUps.Subscription.Update";
+        public const string LookUps_Subscription_Delete = "LookUps.Subscription.Delete";
+
+
+        // SubscriptionOrderPayementAllocation API Permission
+        public const string LookUps_SubscriptionOrderPayementAllocation = "LookUps.SubscriptionOrderPayementAllocation";
+        public const string LookUps_SubscriptionOrderPayementAllocation_Page = "LookUps.SubscriptionOrderPayementAllocation.Pages";
+        public const string LookUps_SubscriptionOrderPayementAllocation_Create = "LookUps.SubscriptionOrderPayementAllocation.Create";
+        public const string LookUps_SubscriptionOrderPayementAllocation_Update = "LookUps.SubscriptionOrderPayementAllocation.Update";
+        public const string LookUps_SubscriptionOrderPayementAllocation_Delete = "LookUps.SubscriptionOrderPayementAllocation.Delete";
+
+        // OrderPlacement API Permission
+        public const string LookUps_OrderPlacement = "LookUps.OrderPlacement";
+        public const string LookUps_OrderPlacement_Page = "LookUps.OrderPlacement.Pages";
+        public const string LookUps_OrderPlacement_Create = "LookUps.OrderPlacement.Create";
+        public const string LookUps_OrderPlacement_Update = "LookUps.OrderPlacement.Update";
+        public const string LookUps_OrderPlacement_Delete = "LookUps.OrderPlacement.Delete";
         // SubCategory API Permission
         public const string LookUps_SubCategory = "LookUps.SubCategory";
         public const string LookUps_SubCategory_Page = "LookUps.SubCategory.Pages";

@@ -8,6 +8,7 @@ using Abp.UI;
 using Embrace.Authorization.Users;
 using Embrace.Entites.SubCategory.Dto;
 using Embrace.Entities;
+using Embrace.Entities.OrderPlacement.Dto;
 using Embrace.General.Dto;
 
 namespace Embrace.General
@@ -15,9 +16,13 @@ namespace Embrace.General
     public class GeneralAppService : EmbraceAppServiceBase, IGeneralAppService
     {
         // Lookups
+        private readonly IRepository<OrderPlacementInfo, long> _orderPlacementRepository;
         private readonly IRepository<UniqueNameAndDateInfo, long> _uniqueNameAndDateInfoRepository;
         private readonly IRepository<SubCategoryInfo, long> _subCategoryRepository;
         private readonly IRepository<CategoryInfo, long> _categoryRepository;
+        private readonly IRepository<SubscriptionInfo, long> _subscriptionRepository;
+        private readonly IRepository<SubscriptionOrderPayementAllocationInfo, long> _subscriptionOrderPayementRepository;
+        private readonly IRepository<SubscriptionTypeInfo, long> _subscriptionTypeRepository;
         private readonly IRepository<SubCategoryImageAllocationInfo, long> _subCategoryImageAllocationRepository;
         private readonly IRepository<MenstruationDetailsInfo, long> _menstruationDetailsRepository;
         private readonly IRepository<SubCategoryAndDateInfo, long> _subCategoryAndDateRepository;
@@ -34,7 +39,11 @@ namespace Embrace.General
         public GeneralAppService(
         IRepository<User, long> repository,
         UserManager userManager,
+        IRepository<SubscriptionInfo, long> subscriptionRepository,
+        IRepository<SubscriptionOrderPayementAllocationInfo, long> subscriptionOrderPayementRepository,
+        IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
         IRepository<ProductVariantsInfo, long> productVariantsRepository,
+        IRepository<OrderPlacementInfo, long> orderPlacementRepository,
         IRepository<SizeInfo, long> sizeRepository,
        IRepository<ProductParameterSizeAllocationInfo, long> productParameterSizeAllocationRepository,
 
@@ -53,6 +62,9 @@ namespace Embrace.General
           ) : base()
         {
             _productParameterSizeAllocationRepository = productParameterSizeAllocationRepository;
+            _subscriptionRepository = subscriptionRepository;
+            _subscriptionOrderPayementRepository = subscriptionOrderPayementRepository;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
             _sizeRepository = sizeRepository;
             _productParameterVariantAllocationRepository = productParameterVariantAllocationRepository;
             _productCategoryRepository = productCategoryRepository;
@@ -64,6 +76,7 @@ namespace Embrace.General
             _menstruationDetailsRepository = menstruationDetailsRepository;
             _categoryRepository = categoryRepository;
             _subCategoryRepository = subCategoryRepository;
+            _orderPlacementRepository = orderPlacementRepository;
             _uniqueNameAndDateInfoRepository = uniqueNameAndDateInfoRepository;
             _productParametersRepository = productParametersRepository;
 
@@ -126,6 +139,198 @@ namespace Embrace.General
             return data;
 
         }
+        public async Task<string> CreateOrderPlacement(CreateOrderPlacementBulkDto createOrderPlacementDto)
+        {
+            foreach (CreateOrderPlacementDto input in createOrderPlacementDto.createBulkOrderPlacement)
+            {
+                var data = ObjectMapper.Map<OrderPlacementInfo>(input);
+               
+                data.LastModificationTime = DateTime.Now;
+                data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                data.TenantId = input.TenantId;
+                await _orderPlacementRepository.InsertAsync(data);
+
+                data.IsActive = true;
+                CurrentUnitOfWork.SaveChanges();
+            }
+        
+            
+            return new string("OrderPlacement Create Successfully");
+
+        }
+        public async Task<string> CreateSubscription(CreateSubscriptionDto input ,int tenant)
+        {
+            var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+            if (dataUniqueKey == null)
+            {
+                throw new UserFriendlyException("Invalid Unique Key");
+            }
+            var dataSubscriptionType = _subscriptionTypeRepository.GetAll().Where(x => x.Name == input.SubscriptionName && x.TenantId == tenant).FirstOrDefault();
+            if (dataUniqueKey == null)
+            {
+                throw new UserFriendlyException("Invalid SubscriptionType");
+            }
+            var subscription = new SubscriptionInfo();
+            subscription.UniqueKey = dataUniqueKey.UniqueKey;
+            subscription.SubscriptionDate = DateTime.Now;
+            subscription.SubscriptionTypeId = dataSubscriptionType.Id;
+            subscription.TenantId = tenant;
+             await _subscriptionRepository.InsertAsync(subscription);
+
+            subscription.IsActive = true;
+
+            CurrentUnitOfWork.SaveChanges();
+            foreach (var  order in input.orderlist)
+            {
+             
+                var orderPlacement = ObjectMapper.Map<OrderPlacementInfo>(order);
+
+                orderPlacement.LastModificationTime = DateTime.Now;
+                orderPlacement.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                orderPlacement.TenantId = tenant;
+                await _orderPlacementRepository.InsertAsync(orderPlacement);
+
+                orderPlacement.IsActive = true;
+                CurrentUnitOfWork.SaveChanges();
+               
+                var orderPlacementAllocation = new SubscriptionOrderPayementAllocationInfo();
+                orderPlacementAllocation.OrderPaymentId = orderPlacement.Id;
+                orderPlacementAllocation.SubscriptionId = subscription.Id;
+                orderPlacementAllocation.LastModificationTime = DateTime.Now;
+                orderPlacementAllocation.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                orderPlacementAllocation.TenantId = tenant;
+                await _subscriptionOrderPayementRepository.InsertAsync(orderPlacementAllocation);
+
+                orderPlacementAllocation.IsActive = true;
+                CurrentUnitOfWork.SaveChanges();
+
+            }
+
+
+            return new string("Subcription Created Successfully");
+        }
+        public async Task<string> CreateSubscriptionbyUniqueKey (string uniqueKey , int tenant)
+        {
+
+            var dataSubscription = _subscriptionRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+
+            var getsubscriptiontype = _subscriptionTypeRepository.GetAll().Where(x => x.Id == dataSubscription.SubscriptionTypeId && x.TenantId == tenant).FirstOrDefault();
+            if (getsubscriptiontype.Name == "Monthly" )
+            {
+                var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                if (dataUniqueKey == null)
+                {
+                    throw new UserFriendlyException("Invalid Unique Key");
+                }
+                var dataorder = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                var addthirtydays = (dataorder.CreationTime.AddDays(30));
+                if (addthirtydays.Date >= DateTime.Now)
+                {
+                    var orderPlacements = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).ToList();
+                    foreach (var item in orderPlacements)
+                    {
+                        
+                        var orderPlacement = ObjectMapper.Map<OrderPlacementInfo>(item);
+                        orderPlacement.Id = 0;
+                        orderPlacement.LastModificationTime = DateTime.Now;
+                        orderPlacement.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacement.TenantId = tenant;
+                        await _orderPlacementRepository.InsertAsync(orderPlacement);
+
+                        orderPlacement.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                        var orderPlacementAllocation = new SubscriptionOrderPayementAllocationInfo();
+                        orderPlacementAllocation.OrderPaymentId = orderPlacement.Id;
+                        orderPlacementAllocation.SubscriptionId = dataSubscription.Id;
+                        orderPlacementAllocation.LastModificationTime = DateTime.Now;
+                        orderPlacementAllocation.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacementAllocation.TenantId = tenant;
+                        await _subscriptionOrderPayementRepository.InsertAsync(orderPlacementAllocation);
+
+                        orderPlacementAllocation.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                    }
+                }
+
+            }
+            if (getsubscriptiontype.Name == "Bimonthly")
+            {
+                var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                if (dataUniqueKey == null)
+                {
+                    throw new UserFriendlyException("Invalid Unique Key");
+                }
+                var dataorder = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                var addthirtydays = (dataorder.CreationTime.AddDays(60));
+                if (addthirtydays.Date >= DateTime.Now)
+                {
+                    var orderPlacements = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).ToList();
+                    foreach (var item in orderPlacements)
+                    {
+
+                        var orderPlacement = ObjectMapper.Map<OrderPlacementInfo>(item);
+                        orderPlacement.Id = 0;
+                        orderPlacement.LastModificationTime = DateTime.Now;
+                        orderPlacement.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacement.TenantId = tenant;
+                        await _orderPlacementRepository.InsertAsync(orderPlacement);
+
+                        orderPlacement.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                        var orderPlacementAllocation = new SubscriptionOrderPayementAllocationInfo();
+                        orderPlacementAllocation.OrderPaymentId = orderPlacement.Id;
+                        orderPlacementAllocation.SubscriptionId = dataSubscription.Id;
+                        orderPlacementAllocation.LastModificationTime = DateTime.Now;
+                        orderPlacementAllocation.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacementAllocation.TenantId = tenant;
+                        await _subscriptionOrderPayementRepository.InsertAsync(orderPlacementAllocation);
+
+                        orderPlacementAllocation.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                    }
+                }
+
+            }
+            if (getsubscriptiontype.Name == "Quarterly")
+            {
+                var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                if (dataUniqueKey == null)
+                {
+                    throw new UserFriendlyException("Invalid Unique Key");
+                }
+                var dataorder = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).OrderByDescending(x => x.Id).FirstOrDefault();
+                var addthirtydays = (dataorder.CreationTime.AddDays(90));
+                if (addthirtydays.Date >= DateTime.Now)
+                {
+                    var orderPlacements = _orderPlacementRepository.GetAll().Where(x => x.UserUniqueName == dataUniqueKey.Name && x.TenantId == tenant).ToList();
+                    foreach (var item in orderPlacements)
+                    {
+
+                        var orderPlacement = ObjectMapper.Map<OrderPlacementInfo>(item);
+                        orderPlacement.Id = 0;
+                        orderPlacement.LastModificationTime = DateTime.Now;
+                        orderPlacement.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacement.TenantId = tenant;
+                        await _orderPlacementRepository.InsertAsync(orderPlacement);
+
+                        orderPlacement.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                        var orderPlacementAllocation = new SubscriptionOrderPayementAllocationInfo();
+                        orderPlacementAllocation.OrderPaymentId = orderPlacement.Id;
+                        orderPlacementAllocation.SubscriptionId = dataSubscription.Id;
+                        orderPlacementAllocation.LastModificationTime = DateTime.Now;
+                        orderPlacementAllocation.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                        orderPlacementAllocation.TenantId = tenant;
+                        await _subscriptionOrderPayementRepository.InsertAsync(orderPlacementAllocation);
+
+                        orderPlacementAllocation.IsActive = true;
+                        CurrentUnitOfWork.SaveChanges();
+                    }
+                }
+
+            }
+            return new string("Subcription Created Successfully");
+        }
         public async Task<MenstruationDetailsInfo> CreateMenstruationDetails(MenstruationDetailsDto input)
         {
             var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
@@ -166,7 +371,7 @@ namespace Embrace.General
         public async Task<SubCategoryAndDateDto> CreateSubCategoryAndDate(SubCategoryAndDateDto input)
         {
             var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
-            if (uniquekey == null)
+            if (uniquekey == null) 
             {
                 throw new UserFriendlyException("Invalid Unique Key");
             }
@@ -441,6 +646,57 @@ namespace Embrace.General
             };
             productParametersDtos.Add(getAllProduct);
            
+            var result = new PagedResultDto<GetAllProductParametersDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(productParametersDtos));
+
+            return result;
+
+        }
+        public PagedResultDto<GetAllProductParametersDto> GetAllProductParameters(PagedResultRequestDto input)
+        {
+            List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+            List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
+            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            var productparameters = _productParametersRepository.GetAll().Where(x =>  x.TenantId == AbpSession.TenantId).ToList();
+            var productlist = productparameters.Select(x => x.Id).ToList();
+            var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => productlist.Contains(x.ProductParameterId)).ToList();
+            foreach (var product in productparameters)
+            {
+                List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+
+                var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+
+                foreach (var item in productvariant)
+                {
+                    var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                    {
+
+                        VariantId = variants.Id,
+                        VariantName = variants.Name
+
+                    };
+                    productvariants.Add(getAllvaranits);
+
+                }
+                GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
+                {
+
+                    Id = product.Id,
+                    ProductName = product.ProductName,
+                    ProductImage = product.ProductImage,
+                    Description = product.Description,
+                    ProductCategoryId = productCategoryData.Id,
+                    ProductCategoryName = productCategoryData.Name,
+                    ProductVariants = productvariants,
+
+                    Price = product.Price,
+                };
+                productParametersDtos.Add(getAllProduct);
+
+            }
+
+
+
             var result = new PagedResultDto<GetAllProductParametersDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(productParametersDtos));
 
             return result;

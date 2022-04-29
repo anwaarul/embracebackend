@@ -186,7 +186,22 @@ namespace Embrace.Entites.ProductImageAllocation
             var result = new PagedResultDto<ProductImageAllocationDto>(query.Count(), ObjectMapper.Map<List<ProductImageAllocationDto>>(statelist));
             return Task.FromResult(result);
         }
+        public PagedResultDto<GetAllProductImageAllocationDto> GetAllProductImageAllocation(PagedResultRequestDto input, int tenantId)
+        {
+            var query = from sb in _productImageAllocationRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
+                        join ca in _productParametersRepository.GetAll() on sb.ProductParameterId equals ca.Id
+                        select new GetAllProductImageAllocationDto()
+                        {
+                            Id = sb.Id,
+                            ProductParameterId = ca.Id,
+                            ProductParameterName = ca.ProductName,
+                            Image = sb.ImageUrl,
+                           
+                        };
 
-       
+            var result = new PagedResultDto<GetAllProductImageAllocationDto>(query.Count(), ObjectMapper.Map<List<GetAllProductImageAllocationDto>>(query));
+            return result;
+        }
+
     }
 }

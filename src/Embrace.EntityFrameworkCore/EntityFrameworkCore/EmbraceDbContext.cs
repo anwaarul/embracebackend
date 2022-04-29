@@ -15,7 +15,9 @@ namespace Embrace.EntityFrameworkCore
             : base(options)
         {
         }
-        public DbSet<CategoryInfo> CategoryInfo { get; set; }
+        public DbSet<SubscriptionInfo> SubscriptionInfo { get; set; }
+        public DbSet<SubscriptionOrderPayementAllocationInfo> SubscriptionOrderPayementAllocationInfo { get; set; }
+        public DbSet<SubscriptionTypeInfo> SubscriptionTypeInfo { get; set; }
         public DbSet<SubCategoryImageAllocationInfo> SubCategoryImageAllocationInfo { get; set; }
         public DbSet<SubCategoryInfo> SubCategoryInfo { get; set; }
         public DbSet<UsersDetailsInfo> UsersDetailsInfo { get; set; }
@@ -30,6 +32,8 @@ namespace Embrace.EntityFrameworkCore
         public DbSet<ProductParameterVariantAllocationInfo> ProductParameterVariantAllocationInfo { get; set; }
         public DbSet<ProductImageAllocationInfo> ProductImageAllocationInfo { get; set; }
         public DbSet<ProductCategoryInfo> ProductCategoryInfo { get; set; }
+        public DbSet<OrderPlacementInfo> OrderPlacementInfo { get; set; }
+        public DbSet<CategoryInfo> CategoryInfo { get; set; }
 
     }
 }
