@@ -12,6 +12,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="OneSignal.RestAPIv3.Client" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Embrace.Core\Embrace.Core.csproj" />
   </ItemGroup>
 </Project>
