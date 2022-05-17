@@ -18,5 +18,8 @@
     <PackageReference Include="Abp.AutoMapper" Version="6.5.0" />
     <PackageReference Include="Abp.ZeroCore.EntityFrameworkCore" Version="6.5.0" />
     <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.4.0" />
+    <PackageReference Include="OneSignal.RestAPIv3.Client" Version="1.2.0" />
+    <PackageReference Include="Quartz" Version="3.4.0" />
+    <PackageReference Include="Uno.UI" Version="4.2.6" />
   </ItemGroup>
 </Project>

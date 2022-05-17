@@ -184,7 +184,24 @@ namespace Embrace.Entites.SubCategoryImageAllocation
             var result = new PagedResultDto<SubCategoryImageAllocationDto>(query.Count(), ObjectMapper.Map<List<SubCategoryImageAllocationDto>>(statelist));
             return Task.FromResult(result);
         }
-      
+        public PagedResultDto<GetAllSubCategoryImageAllocationDto> GetAllSubCategoryAllocationbySubCategoryId(PagedResultRequestDto input , long subcategoryId)
+        {
+            var query = from sb in _subCategoryInfoRepository.GetAll().Where(x => x.IsActive == true && x.Id == subcategoryId && x.TenantId == AbpSession.TenantId).ToList()
+                        
+                        join alo in _subCategoryImageAllocationRepository.GetAll().ToList() on sb.Id equals alo.SubCategoryId
+                        into image
+                        select new GetAllSubCategoryImageAllocationDto()
+                        {
+                            Id = sb.Id,
+                            SubCategoryId = sb.Id,
+                            SubCategoryName = sb.Name,
+                            Image = image,
+                            
+                        };
+
+            var result = new PagedResultDto<GetAllSubCategoryImageAllocationDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryImageAllocationDto>>(query));
+            return result;
+        }
 
     }
 }
