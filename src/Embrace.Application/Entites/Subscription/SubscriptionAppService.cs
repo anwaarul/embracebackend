@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Embrace.Entities;
 using Embrace.Entities.Subscription.Dto;
 using Embrace.Entities.Subscription;
+using Embrace.Entites.Subscription.Dto;
 
 namespace Embrace.Entites.Subscription
 {
@@ -21,13 +22,17 @@ namespace Embrace.Entites.Subscription
     public class SubscriptionAppService : AsyncCrudAppService<SubscriptionInfo, SubscriptionDto, long, PagedResultRequestDto, SubscriptionDto, SubscriptionDto>, ISubscriptionAppService
     {
         private readonly IRepository<SubscriptionInfo, long> _subscriptionRepository;
+        private readonly IRepository<SubscriptionTypeInfo, long> _subscriptionTypeRepository;
         private readonly IPermissionManager _permissionManager;
-        public SubscriptionAppService(IRepository<SubscriptionInfo, long> _repository,
+        public SubscriptionAppService(
+            IRepository<SubscriptionInfo, long> _repository,
+            IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
 
             IPermissionManager _Manager) : base(_repository)
         {
 
             _subscriptionRepository = _repository;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
             _permissionManager = _Manager;
         }
 
@@ -88,7 +93,28 @@ namespace Embrace.Entites.Subscription
             var result = new PagedResultDto<SubscriptionDto>(query.Count(), ObjectMapper.Map<List<SubscriptionDto>>(statelist));
             return Task.FromResult(result);
         }
-       
-        
+        public PagedResultDto<GetAllSubscriptionDto> GetAllSubscription(PagedResultRequestDto input)
+        {
+
+            var query = from s in _subscriptionRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId)
+                        join st in _subscriptionTypeRepository.GetAll() on s.SubscriptionTypeId equals st.Id
+ 
+                        select new GetAllSubscriptionDto()
+                        {
+                            Id = s.Id,
+                            UniqueKey = s.UniqueKey,
+                            SubscriptionDate = s.SubscriptionDate,
+                            SubscriptionTypeId = s.SubscriptionTypeId,
+                            SubscriptionTypeName = st.Name,
+
+                        };
+
+            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<GetAllSubscriptionDto>(query.Count(), ObjectMapper.Map<List<GetAllSubscriptionDto>>(dataList));
+
+            return result;
+
+        }
+
     }
 }

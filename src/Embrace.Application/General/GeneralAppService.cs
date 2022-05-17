@@ -654,20 +654,29 @@ namespace Embrace.General
         public PagedResultDto<GetAllProductParametersDto> GetAllProductParameters(PagedResultRequestDto input)
         {
             List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+            List<SizeInfo> productSizes = new List<SizeInfo>();
+
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
+
             productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+
             var productparameters = _productParametersRepository.GetAll().Where(x =>  x.TenantId == AbpSession.TenantId).ToList();
             var productlist = productparameters.Select(x => x.Id).ToList();
+
             var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => productlist.Contains(x.ProductParameterId)).ToList();
+            var productsize = _productParameterSizeAllocationRepository.GetAll().Where(x => productlist.Contains(x.ProductParameterId)).ToList();
+
             foreach (var product in productparameters)
             {
                 List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+                List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
 
                 var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true && x.TenantId == AbpSession.TenantId).FirstOrDefault();
 
-                foreach (var item in productvariant)
+                foreach (var itemVariant in productvariant)
                 {
-                    var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    var variants = productVariants.Where(x => x.Id == itemVariant.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
                     GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
                     {
 
@@ -676,6 +685,19 @@ namespace Embrace.General
 
                     };
                     productvariants.Add(getAllvaranits);
+
+                }
+                foreach (var itemSize in productsize)
+                {
+                    var sizes = productSizes.Where(x => x.Id == itemSize.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
+                    {
+
+                        SizeId = sizes.Id,
+                        SizeName = sizes.Name
+
+                    };
+                    productsizes.Add(getAllsizes);
 
                 }
                 GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
@@ -688,7 +710,7 @@ namespace Embrace.General
                     ProductCategoryId = productCategoryData.Id,
                     ProductCategoryName = productCategoryData.Name,
                     ProductVariants = productvariants,
-
+                    ProductSizes = productsizes,
                     Price = product.Price,
                 };
                 productParametersDtos.Add(getAllProduct);
