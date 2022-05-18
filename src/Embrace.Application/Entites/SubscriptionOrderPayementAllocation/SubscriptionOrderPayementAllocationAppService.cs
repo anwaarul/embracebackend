@@ -20,6 +20,7 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
     {
         private readonly IRepository<SubscriptionOrderPayementAllocationInfo, long> _SubscriptionOrderPayementAllocationRepository;
         private readonly IRepository<SubscriptionInfo, long> _subscriptionRepository;
+        private readonly IRepository<SubscriptionTypeInfo, long> _subscriptionTypeRepository;
         private readonly IRepository<OrderPlacementInfo, long> _orderPlacementRepository;
         
         private readonly UserManager _userManager;
@@ -29,6 +30,7 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
             IRepository<SubscriptionOrderPayementAllocationInfo, long> _repository,
             IRepository<OrderPlacementInfo, long> orderPlacementRepository,
             IRepository<SubscriptionInfo, long> subscriptionRepository,
+            IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
             
             
              IRepository<User, long> repository,
@@ -41,6 +43,7 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
             _subscriptionRepository = subscriptionRepository;           
             _permissionManager = _Manager;
             _orderPlacementRepository = orderPlacementRepository;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
             
         }
 
@@ -51,7 +54,7 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
             var ProductParameterData = _subscriptionRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Id== input.SubscriptionId).FirstOrDefault();
             if (ProductParameterData == null)
             {
-                throw new UserFriendlyException("No  Found to Allocate");
+                throw new UserFriendlyException("No Product Found to Allocate");
             }
             //OrderPlacement/s check
             var orderPaymentId = input.OrderPaymentId.Split(',').Select(long.Parse).ToList();
@@ -138,29 +141,44 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
 
         }
 
-        //public PagedResultDto<GetAllSubscriptionOrderPayementAllocationDto> GetAllSubscriptionOrderPayementAllocation(PagedResultRequestDto input)
-        //{
+        public PagedResultDto<GetAllSubscriptionOrderPayementAllocationDto> GetAllSubscriptionOrderPayementAllocationBySubscriptionId(PagedResultRequestDto input, long subscriptionId)
+        {
 
-        //    var query = from sp in _SubscriptionOrderPayementAllocationRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId)
-        //                join pp in _subscriptionRepository.GetAll() on sp.SubscriptionId equals pp.Id
-        //                join s in _orderPlacementRepository.GetAll() on sp.OrderPaymentId equals s.Id
+            var query = from so in _SubscriptionOrderPayementAllocationRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId
+                        && x.SubscriptionId == subscriptionId)
+                        join o in _orderPlacementRepository.GetAll() on so.OrderPaymentId equals o.Id
+                        join s in _subscriptionRepository.GetAll() on so.SubscriptionId equals s.Id
+                        join st in _subscriptionTypeRepository.GetAll() on s.SubscriptionTypeId equals st.Id
 
-        //                select new GetAllSubscriptionOrderPayementAllocationDto()
-        //                {
-        //                    Id = sp.Id,
-        //                    OrderPaymentId = s.Id,
-        //                    OrderPaymentName = s.or,
-        //                    SizeId = sp.SizeId,
-        //                    SizeName = s.Name,
+                        select new GetAllSubscriptionOrderPayementAllocationDto()
+                        {
+                            Id = so.Id,
+                            OrderPaymentId = so.OrderPaymentId,
+                            UserUniqueName = o.UserUniqueName,
+                            ProductName = o.ProductName,
+                            VarientName = o.VarientName,
+                            SizeName = o.SizeName,
+                            Address = o.Address,
+                            CityName = o.CityName,
+                            FirstName = o.FirstName,
+                            LastName = o.LastName,
+                            ContactNumber = o.ContactNumber,
+                            CountryName = o.CountryName,
+                            ZipPostalCode = o.ZipPostalCode,
+                            SubscriptionId = s.Id,
+                            UniqueKey = s.UniqueKey,
+                            SubscriptionDate = s.SubscriptionDate,
+                            SubscriptionTypeId = s.SubscriptionTypeId,
+                            SubscriptionTypeName = st.Name
 
-        //                };
+                        };
 
-        //    var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-        //    var result = new PagedResultDto<GetAllSubscriptionOrderPayementAllocationDto>(query.Count(), ObjectMapper.Map<List<GetAllSubscriptionOrderPayementAllocationDto>>(dataList));
+            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<GetAllSubscriptionOrderPayementAllocationDto>(query.Count(), ObjectMapper.Map<List<GetAllSubscriptionOrderPayementAllocationDto>>(dataList));
 
-        //    return result;
+            return result;
 
-        //}
+        }
 
     }
 }
