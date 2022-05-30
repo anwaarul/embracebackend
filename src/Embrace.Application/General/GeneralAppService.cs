@@ -1141,7 +1141,7 @@ namespace Embrace.General
                 smtpClient.EnableSsl = true;
                 smtpClient.UseDefaultCredentials = false; // uncomment if you don't want to use the network credentials
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtpClient.Credentials = new System.Net.NetworkCredential("info@madamporter.com", "kM#q*MB5$YIA");
+                smtpClient.Credentials = new System.Net.NetworkCredential("rafia@madamporter.com", "mM1?7S49XXfO");
 
                 //Setting From , To and CC
                 MailMessage msg = new MailMessage();
@@ -1171,7 +1171,7 @@ namespace Embrace.General
                 msg.IsBodyHtml = true;
 
                 msg.Subject = " A query has been received";
-                msg.From = new MailAddress("info@madamporter.com");
+                msg.From = new MailAddress("rafia@madamporter.com");
                 msg.To.Add(new MailAddress("taqadus@vrox.co.uk"));
                 msg.CC.Add(new MailAddress("taqadus@vrox.co.uk"));
 
