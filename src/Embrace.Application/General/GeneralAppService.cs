@@ -939,43 +939,72 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllProductParametersDto> GetAllProductsByCategoryName(PagedResultRequestDto input, string categoryName)
         {
+            categoryName = categoryName != null ? categoryName :string.Empty;
             List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
             List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
             
             productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
-            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Name == categoryName.ToLower()).FirstOrDefault();
-            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-            var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
-            
-            foreach (var item in productvariant)
+            if (productVariants.Count == 0)
             {
-                var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-                GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                throw new UserFriendlyException("Product Variants are missing");
+            }
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId 
+            && x.Name == categoryName).FirstOrDefault();
+            if(productCategoryData == null)
+            {
+                throw new UserFriendlyException("No Product Category Found");
+            }
+            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id 
+            && x.TenantId == AbpSession.TenantId).ToList();
+            if (productparameters == null)
+            {
+                throw new UserFriendlyException("No Product Parameters Found");
+            }
+            foreach (var productparametersItem in productparameters)
+            {
+                productvariants = new List<GetAllProductVariantsDto>();
+                var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
+                if (productvariant.Count == 0)
+                {
+                    throw new UserFriendlyException("No Product Parameter Variant Allocation Found");
+                }
+                foreach (var item in productvariant)
+                {
+                    var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                    {
+
+                        VariantId = variants.Id,
+                        VariantName = variants.Name
+
+                    };
+                    productvariants.Add(getAllvaranits);
+                }
+
+                GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
                 {
 
-                    VariantId = variants.Id,
-                    VariantName = variants.Name
-                      
-                };
-                productvariants.Add(getAllvaranits);
-            }
-            
-            GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
-            {
+                    Id = productparametersItem.Id,
+                    ProductName = productparametersItem.ProductName,
+                    ProductImage = productparametersItem.ProductImage,
+                    Description = productparametersItem.Description,
+                    ProductCategoryId = productCategoryData.Id,
+                    ProductCategoryName = productCategoryData.Name,
+                    ProductVariants = productvariants,
 
-                Id = productparameters.Id,
-                ProductName = productparameters.ProductName,
-                ProductImage = productparameters.ProductImage,
-                Description = productparameters.Description,
-                ProductCategoryId = productCategoryData.Id,
-                ProductCategoryName = productCategoryData.Name,
-                ProductVariants = productvariants,
-               
-                Price = productparameters.Price,
-            };
-            productParametersDtos.Add(getAllProduct);
-           
+                    Price = productparametersItem.Price,
+                };
+                productParametersDtos.Add(getAllProduct);
+
+            }
+            //var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
+            //if (productvariant.Count == 0)
+            //{
+            //    throw new UserFriendlyException("No Product Parameter Variant Allocation Found");
+            //}
+
+
             var result = new PagedResultDto<GetAllProductParametersDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(productParametersDtos));
 
             return result;
