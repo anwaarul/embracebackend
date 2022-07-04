@@ -169,7 +169,8 @@ namespace Embrace.Entites.ProductImageAllocation
 
         public async Task DeleteProductImageAllocationbySubCategoryId(long subCategoryId)
         {
-            var subcategoryA = _productImageAllocationRepository.GetAll().Where(x => x.ProductParameterId == subCategoryId && x.TenantId == AbpSession.TenantId).ToList();
+            var subcategoryA = _productImageAllocationRepository.GetAll().Where(x => x.ProductParameterId == subCategoryId 
+            && x.TenantId == AbpSession.TenantId).ToList();
 
             foreach (var subCategory in subcategoryA)
             {

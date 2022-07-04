@@ -941,14 +941,22 @@ namespace Embrace.General
         {
             categoryName = categoryName != null ? categoryName :string.Empty;
             List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+            List<SizeInfo> productSizes = new List<SizeInfo>(); 
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
             List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+            List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
             
             productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
             if (productVariants.Count == 0)
             {
                 throw new UserFriendlyException("Product Variants are missing");
             }
+            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            if (productSizes.Count == 0)
+            {
+                throw new UserFriendlyException("Product Sizes are missing");
+            }
+
             var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId 
             && x.Name == categoryName).FirstOrDefault();
             if(productCategoryData == null)
@@ -964,22 +972,44 @@ namespace Embrace.General
             foreach (var productparametersItem in productparameters)
             {
                 productvariants = new List<GetAllProductVariantsDto>();
+                productsizes = new List<GetAllProductSizeDto>();
+
+                // For Product Parameter Variant Allocation
                 var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
-                if (productvariant.Count == 0)
+                if (productvariant.Count != 0)
                 {
-                    throw new UserFriendlyException("No Product Parameter Variant Allocation Found");
-                }
-                foreach (var item in productvariant)
-                {
-                    var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-                    GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+
+                    foreach (var item in productvariant)
                     {
+                        var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                        {
 
-                        VariantId = variants.Id,
-                        VariantName = variants.Name
+                            VariantId = variants.Id,
+                            VariantName = variants.Name
 
-                    };
-                    productvariants.Add(getAllvaranits);
+                        };
+                        productvariants.Add(getAllvaranits);
+                    }
+                }
+
+                // For Product Parameter Size Allocation
+                var productSize = _productParameterSizeAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
+                if (productSize.Count != 0)
+                {    
+                    
+                    foreach (var sizeItem in productSize)
+                    {
+                        var sizes = productSizes.Where(x => x.Id == sizeItem.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
+                        {
+
+                            SizeId = sizes.Id,
+                            SizeName = sizes.Name
+
+                        };
+                        productsizes.Add(getAllsizes);
+                    }
                 }
 
                 GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
@@ -989,11 +1019,11 @@ namespace Embrace.General
                     ProductName = productparametersItem.ProductName,
                     ProductImage = productparametersItem.ProductImage,
                     Description = productparametersItem.Description,
+                    Price = productparametersItem.Price,
                     ProductCategoryId = productCategoryData.Id,
                     ProductCategoryName = productCategoryData.Name,
                     ProductVariants = productvariants,
-
-                    Price = productparametersItem.Price,
+                    ProductSizes = productsizes,
                 };
                 productParametersDtos.Add(getAllProduct);
 
