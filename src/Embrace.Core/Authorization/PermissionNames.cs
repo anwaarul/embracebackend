@@ -142,6 +142,29 @@
         public const string LookUps_ProductCategory_Create = "LookUps.ProductCategory.Create";
         public const string LookUps_ProductCategory_Update = "LookUps.ProductCategory.Update";
         public const string LookUps_ProductCategory_Delete = "LookUps.ProductCategory.Delete";
+
+        // Blog API Permission
+        public const string LookUps_Blog = "LookUps.Blog";
+        public const string LookUps_Blog_Page = "LookUps.Blog.Pages";
+        public const string LookUps_Blog_Create = "LookUps.Blog.Create";
+        public const string LookUps_Blog_Update = "LookUps.Blog.Update";
+        public const string LookUps_Blog_Delete = "LookUps.Blog.Delete";
+
+        // BlogCategory API Permission
+        public const string LookUps_BlogCategory = "LookUps.BlogCategory";
+        public const string LookUps_BlogCategory_Page = "LookUps.BlogCategory.Pages";
+        public const string LookUps_BlogCategory_Create = "LookUps.BlogCategory.Create";
+        public const string LookUps_BlogCategory_Update = "LookUps.BlogCategory.Update";
+        public const string LookUps_BlogCategory_Delete = "LookUps.BlogCategory.Delete";
+
+        // BlogBlogCategoryAllocation API Permission
+        public const string LookUps_BlogBlogCategoryAllocation = "LookUps.BlogBlogCategoryAllocation";
+        public const string LookUps_BlogBlogCategoryAllocation_Page = "LookUps.BlogBlogCategoryAllocation.Pages";
+        public const string LookUps_BlogBlogCategoryAllocation_Create = "LookUps.BlogBlogCategoryAllocation.Create";
+        public const string LookUps_BlogBlogCategoryAllocation_Update = "LookUps.BlogBlogCategoryAllocation.Update";
+        public const string LookUps_BlogBlogCategoryAllocation_Delete = "LookUps.BlogBlogCategoryAllocation.Delete";
+
+        
     }
 
    

@@ -12,6 +12,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Entites\BlogCategory\BlogCategoryAppService.cs~RF228df687.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="OneSignal.RestAPIv3.Client" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>

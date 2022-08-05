@@ -11,6 +11,8 @@ using Abp.UI;
 using Embrace.Authorization.Users;
 using Embrace.Entites.SubCategory.Dto;
 using Embrace.Entities;
+using Embrace.Entities.Blog.Dto;
+using Embrace.Entities.BlogCategory.Dto;
 using Embrace.Entities.OrderPlacement.Dto;
 using Embrace.General.Dto;
 using Embrace.Quartz;
@@ -40,6 +42,8 @@ namespace Embrace.General
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
         private readonly IRepository<SizeInfo, long> _sizeRepository;
         private readonly IRepository<ProductParameterSizeAllocationInfo, long> _productParameterSizeAllocationRepository;
+        private readonly IRepository<BlogInfo, long> _blogRepository;
+        private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -63,7 +67,9 @@ namespace Embrace.General
         IRepository<SubCategoryImageAllocationInfo, long> subCategoryImageAllocationRepository,
         IRepository<SubCategoryInfo, long> subCategoryRepository,
         IRepository<CategoryInfo, long> categoryRepository,
-        IRepository<ProductParametersInfo, long> productParametersRepository
+        IRepository<ProductParametersInfo, long> productParametersRepository,
+        IRepository<BlogInfo, long> blogRepository,
+        IRepository<BlogCategoryInfo, long> blogCategoryRepository
 
           ) : base()
         {
@@ -85,6 +91,8 @@ namespace Embrace.General
             _orderPlacementRepository = orderPlacementRepository;
             _uniqueNameAndDateInfoRepository = uniqueNameAndDateInfoRepository;
             _productParametersRepository = productParametersRepository;
+            _blogRepository = blogRepository;
+            _blogCategoryRepository = blogCategoryRepository;
 
         }
 
@@ -1243,12 +1251,161 @@ namespace Embrace.General
 
                 throw new UserFriendlyException(ex.Message);
             }
+            return "Sending Mail Successfully";         
+        }
+        public PagedResultDto<GetAllBlogDto> GetAllBlogs(PagedResultRequestDto input, long tenantId)
+        {
 
+            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
+                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
 
+                        select new GetAllBlogDto()
+                        {
+                            Id = b.Id,
+                            Title = b.Title,
+                            Description = b.Description,
+                            CategoryId = b.CategoryId,
+                            CategoryName = bc.Name
+                        };
 
-            return "Sending Mail Successfully";
+            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<Entities.Blog.Dto.GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
 
+            return result;
+
+        }
+        public PagedResultDto<GetAllBlogDto> GetAllBlogsByCategoryId(PagedResultRequestDto input, long categoryId, long tenantId)
+        {
+
+            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId
+                        && x.CategoryId == categoryId)
+                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
+
+                        select new GetAllBlogDto()
+                        {
+                            Id = b.Id,
+                            Title = b.Title,
+                            Description = b.Description,
+                            CategoryId = b.CategoryId,
+                            CategoryName = bc.Name
+                        };
+
+            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
+
+            return result;
+
+        }
+        public PagedResultDto<BlogCategoryDto> GetAllBlogCategory(PagedResultRequestDto input, long tenantId)
+        {
           
+            var dataBlogCategory = _blogCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId).ToList();
+            var statelist = dataBlogCategory.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+
+            var result = new PagedResultDto<BlogCategoryDto>(statelist.Count(), ObjectMapper.Map<List<BlogCategoryDto>>(statelist));
+            return result;
+        }
+        public PagedResultDto<GetAllBlogsWithBlogCategoryDto> GetAllBlogsWithBlogCategory(PagedResultRequestDto input)
+        {            
+            
+            List<BlogInfo> productSizes = new List<BlogInfo>();
+            List<GetAllBlogsWithBlogCategoryDto> productParametersDtos = new List<GetAllBlogsWithBlogCategoryDto>();
+            List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
+            List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
+
+            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            if (productVariants.Count == 0)
+            {
+                throw new UserFriendlyException("Product Variants are missing");
+            }
+            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            if (productSizes.Count == 0)
+            {
+                throw new UserFriendlyException("Product Sizes are missing");
+            }
+
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId
+            && x.Name == categoryName).FirstOrDefault();
+            if (productCategoryData == null)
+            {
+                throw new UserFriendlyException("No Product Category Found");
+            }
+            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id
+            && x.TenantId == AbpSession.TenantId).ToList();
+            if (productparameters == null)
+            {
+                throw new UserFriendlyException("No Product Parameters Found");
+            }
+            foreach (var productparametersItem in productparameters)
+            {
+                productvariants = new List<GetAllProductVariantsDto>();
+                productsizes = new List<GetAllProductSizeDto>();
+
+                // For Product Parameter Variant Allocation
+                var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
+                if (productvariant.Count != 0)
+                {
+
+                    foreach (var item in productvariant)
+                    {
+                        var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
+                        {
+
+                            VariantId = variants.Id,
+                            VariantName = variants.Name
+
+                        };
+                        productvariants.Add(getAllvaranits);
+                    }
+                }
+
+                // For Product Parameter Size Allocation
+                var productSize = _productParameterSizeAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
+                if (productSize.Count != 0)
+                {
+
+                    foreach (var sizeItem in productSize)
+                    {
+                        var sizes = productSizes.Where(x => x.Id == sizeItem.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
+                        {
+
+                            SizeId = sizes.Id,
+                            SizeName = sizes.Name
+
+                        };
+                        productsizes.Add(getAllsizes);
+                    }
+                }
+
+                GetAllBlogsWithBlogCategoryDto getAllProduct = new GetAllBlogsWithBlogCategoryDto()
+                {
+
+                    Id = productparametersItem.Id,
+                    ProductName = productparametersItem.ProductName,
+                    ProductImage = productparametersItem.ProductImage,
+                    Description = productparametersItem.Description,
+                    Price = productparametersItem.Price,
+                    ProductCategoryId = productCategoryData.Id,
+                    ProductCategoryName = productCategoryData.Name,
+                    ProductVariants = productvariants,
+                    ProductSizes = productsizes,
+                };
+                productParametersDtos.Add(getAllProduct);
+
+            }
+            //var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
+            //if (productvariant.Count == 0)
+            //{
+            //    throw new UserFriendlyException("No Product Parameter Variant Allocation Found");
+            //}
+
+
+            var result = new PagedResultDto<GetAllBlogsWithBlogCategoryDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllBlogsWithBlogCategoryDto>>(productParametersDtos));
+
+            return result;
+
         }
     }
 }

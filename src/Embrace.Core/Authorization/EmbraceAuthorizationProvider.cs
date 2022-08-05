@@ -148,6 +148,27 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Update, L("UpdateProductImageAllocation"));
             context.CreatePermission(PermissionNames.LookUps_ProductImageAllocation_Delete, L("DeleteProductImageAllocation"));
 
+            //Blog Permission
+            context.CreatePermission(PermissionNames.LookUps_Blog, L("Blog"));
+            context.CreatePermission(PermissionNames.LookUps_Blog_Page, L("PageBlog"));
+            context.CreatePermission(PermissionNames.LookUps_Blog_Create, L("CreateBlog"));
+            context.CreatePermission(PermissionNames.LookUps_Blog_Update, L("UpdateBlog"));
+            context.CreatePermission(PermissionNames.LookUps_Blog_Delete, L("DeleteBlog"));
+
+            //BlogCategory Permission
+            context.CreatePermission(PermissionNames.LookUps_BlogCategory, L("BlogCategory"));
+            context.CreatePermission(PermissionNames.LookUps_BlogCategory_Page, L("PageBlogCategory"));
+            context.CreatePermission(PermissionNames.LookUps_BlogCategory_Create, L("CreateBlogCategory"));
+            context.CreatePermission(PermissionNames.LookUps_BlogCategory_Update, L("UpdateBlogCategory"));
+            context.CreatePermission(PermissionNames.LookUps_BlogCategory_Delete, L("DeleteBlogCategory"));
+
+            //BlogBlogCategoryAllocation Permission
+            context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation, L("BlogBlogCategoryAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Page, L("PageBlogBlogCategoryAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Create, L("CreateBlogBlogCategoryAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Update, L("UpdateBlogBlogCategoryAllocation"));
+            context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Delete, L("DeleteBlogBlogCategoryAllocation"));
+
         }
 
         private static ILocalizableString L(string name)
