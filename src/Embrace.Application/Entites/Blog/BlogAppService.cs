@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Embrace.Entities;
 using Embrace.Entities.Blog.Dto;
 using Embrace.Entities.Blog;
+using System.IO;
 
 namespace Embrace.Entites.Blog
 {
@@ -38,8 +39,11 @@ namespace Embrace.Entites.Blog
         [AbpAuthorize(PermissionNames.LookUps_Blog_Create)]
         public override async Task<GetAllBlogDto> CreateAsync(GetAllBlogDto input)
         {
-           
+            var imgUrl = "";
+            imgUrl = SaveImage(input.ImageUrl);
+
             var result = ObjectMapper.Map<BlogInfo>(input);
+            result.ImageUrl = imgUrl;
             result.CreatorUserId = Convert.ToInt32(AbpSession.UserId);
             result.TenantId = Convert.ToInt32(AbpSession.TenantId);
 
@@ -56,12 +60,14 @@ namespace Embrace.Entites.Blog
         public override async Task<GetAllBlogDto> UpdateAsync(GetAllBlogDto input)
         {
             var prevdataBlog = _blogRepository.GetAll().Where(x => x.Id == input.Id && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-          
+            var imgUrl = "";
+            imgUrl = SaveImage(input.ImageUrl);
+
             var data = ObjectMapper.Map<BlogInfo>(prevdataBlog);
             data.Title = input.Title;
             data.Description = input.Description;
             data.CategoryId = input.CategoryId;
-            data.ImageUrl = input.ImageUrl;
+            data.ImageUrl = imgUrl;
             data.LastModificationTime = DateTime.Now;
             data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
 
@@ -71,6 +77,43 @@ namespace Embrace.Entites.Blog
             var result = ObjectMapper.Map<GetAllBlogDto>(data);
             return result;
 
+        }
+        protected string SaveImage(string ImgStr)
+        {
+            // create path
+            String folder = Path.Combine(
+            Directory.GetCurrentDirectory(), "wwwroot\\BlogImage\\");
+            DirectoryInfo di;
+            if (!Directory.Exists(folder))
+            {
+                // Try to create the directory.
+                try
+                {
+
+                    di = Directory.CreateDirectory(folder);
+                }
+                catch (Exception ex)
+                {
+                    throw new UserFriendlyException(ex.Message);
+                }
+            }
+
+            //Check if directory exist
+            if (!System.IO.Directory.Exists(folder))
+            {
+                System.IO.Directory.CreateDirectory(folder); //Create directory if it doesn't exist
+            }
+
+            string imageName = Guid.NewGuid().ToString() + ".jpg";
+
+            //set the image path
+            string imgPath = Path.Combine(folder, imageName);
+
+            byte[] imageBytes = Convert.FromBase64String(ImgStr);
+
+            File.WriteAllBytes(imgPath, imageBytes);
+
+            return "http://54.37.97.142:81/" + "/" + "BlogImage" + "/" + "/" + imageName;
         }
         [AbpAuthorize(PermissionNames.LookUps_Blog_Delete)]
         public override async Task DeleteAsync(EntityDto<long> input)
@@ -151,6 +194,6 @@ namespace Embrace.Entites.Blog
 
             return result;
         }
-
+         
     }
 }

@@ -9,6 +9,7 @@ namespace Embrace.General.Dto
 {
     public class GetAllBlogsWithBlogCategoryDto : EntityDto<long>
     {
-        public List<GetAllGeneralBlogDto> BlogCategory { get; set; }
+        public String CategoryName { get; set; }
+        public List<GetAllGeneralBlogDto> BlogsData { get; set; }
     }
 }
