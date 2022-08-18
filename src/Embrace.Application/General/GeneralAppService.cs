@@ -151,23 +151,20 @@ namespace Embrace.General
 
             CurrentUnitOfWork.SaveChanges();
             GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
-            menstruation = GetAllMenstruation(result.StartDatePeriod, result.EndDatePeriod);
+            menstruation = GetAllMenstruation(result.StartDatePeriod);
 
             var menstration = new MenstruationDetailsInfo();
             menstration.TenantId = input.TenantId;
             menstration.UniqueKey = result.UniqueKey;
             menstration.MyCycle = menstruation.MyCycle;
             menstration.Ovulation_day = menstruation.Ovulation_day;
-            menstration.Last_ovulation = menstruation.Last_ovulation;
-            menstration.Next_mens = menstruation.Next_mens;
-            menstration.Next_ovulation = menstruation.Next_ovulation;
-            menstration.Ovulation_window1 = menstruation.Ovulation_window1;
-            menstration.Ovulation_window2 = menstruation.Ovulation_window2;
-            menstration.Ovulation_window3 = menstruation.Ovulation_window3;
-            menstration.Safe_period1 = menstruation.Safe_period1;
-            menstration.Safe_period2 = menstruation.Safe_period2;
-            menstration.Safe_period3 = menstruation.Safe_period3;
-            menstration.Safe_period4 = menstruation.Safe_period4;
+            menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
+            menstration.Last_Mens_End = menstruation.Last_Mens_End;
+            menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
+            menstration.Next_Mens_End = menstruation.Next_Mens_End;
+            menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+            menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+           
 
             await _menstruationDetailsRepository.InsertAsync(menstration);
 
@@ -546,15 +543,36 @@ namespace Embrace.General
             {
                 throw new UserFriendlyException("Invalid Unique Key");
             }
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+            
+            GetAllMenstruationDetails menstruation =new GetAllMenstruationDetails();
+            menstruation = GetAllMenstruation(uniquekey.StartDatePeriod);
+            
+=======
+>>>>>>> Stashed changes
 
             GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
             menstruation = GetAllMenstruation(uniquekey.StartDatePeriod, uniquekey.EndDatePeriod);
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
+>>>>>>> Stashed changes
             var result = new MenstruationDetailsInfo();
             result.TenantId = input.TenantId;
             result.UniqueKey = uniquekey.UniqueKey;
             result.MyCycle = menstruation.MyCycle;
             result.Ovulation_day = menstruation.Ovulation_day;
+<<<<<<< HEAD
+            result.Last_Mens_Start = menstruation.Last_Mens_Start;
+            result.Last_Mens_End = menstruation.Last_Mens_End;
+            result.Next_Mens_Start = menstruation.Next_Mens_Start;
+            result.Next_Mens_End = menstruation.Next_Mens_End;
+            result.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+            result.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+=======
             result.Last_ovulation = menstruation.Last_ovulation;
             result.Next_mens = menstruation.Next_mens;
             result.Next_ovulation = menstruation.Next_ovulation;
@@ -565,6 +583,10 @@ namespace Embrace.General
             result.Safe_period2 = menstruation.Safe_period2;
             result.Safe_period3 = menstruation.Safe_period3;
             result.Safe_period4 = menstruation.Safe_period4;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
+>>>>>>> Stashed changes
 
             await _menstruationDetailsRepository.InsertAsync(result);
 
@@ -612,43 +634,51 @@ namespace Embrace.General
             var result = new PagedResultDto<UniqueNameAndDateUniqueKeyDto>(query.Count(), ObjectMapper.Map<List<UniqueNameAndDateUniqueKeyDto>>(statelist));
             return Task.FromResult(result);
         }
-        protected GetAllMenstruationDetails GetAllMenstruation(DateTime currentMensDate, DateTime previuosMensDate)
+        protected GetAllMenstruationDetails GetAllMenstruation(DateTime currentMensDate)
         {
-            var date_diff = (currentMensDate.Date - previuosMensDate.Date);
-            var ovulation_day = (date_diff.Days - 14);
-            var last_ovulation = (currentMensDate.AddDays(-14));
-            var next_mens = (currentMensDate.AddDays(date_diff.Days));
-            var next_ovulation = (next_mens.AddDays(-14));
-            var ovulation_window1 = (currentMensDate.AddDays(-18));
-            var ovulation_window2 = (currentMensDate.AddDays(-14));
-            var ovulation_window3 = (next_mens.AddDays(-18));
-            var ovulation_window4 = (next_mens.AddDays(-14));
-            var safe_period1 = currentMensDate.Date;
-            var safe_period2 = (currentMensDate.AddDays(9));
-            var safe_period3 = (currentMensDate.AddDays(15));
-            var safe_period4 = (currentMensDate.AddDays(37));
+
+            var totalDays = currentMensDate.AddDays(28);
+            var ovulation_day = (totalDays.AddDays(11));
+            var last_mens_start = (totalDays.AddDays(-28));
+            var last_mens_end = (totalDays.AddDays(-24));
+            var next_mens_start = (totalDays.AddDays(-1));
+            var next_mens_end = (totalDays.AddDays(3));
+            var ovulation_window_start = (ovulation_day.AddDays(-2));
+            var ovulation_window_end = (ovulation_day.AddDays(2));
+
 
 
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                MyCycle = date_diff.Days,
-                Ovulation_day = ovulation_day,
-                Last_ovulation = last_ovulation.Date,
-                Next_mens = next_mens.Date,
-                Next_ovulation = next_ovulation.Date,
-                Ovulation_window1 = ovulation_window1.Date,
-                Ovulation_window2 = ovulation_window2.Date,
-                Ovulation_window3 = ovulation_window3.Date,
-                Ovulation_window4 = ovulation_window4.Date,
-                Safe_period1 = safe_period1.Date,
-                Safe_period2 = safe_period2.Date,
-                Safe_period3 = safe_period3.Date,
-                Safe_period4 = safe_period4.Date,
+                MyCycle = totalDays.Day,
+                Ovulation_day = ovulation_day.Day,
+                Last_Mens_Start = last_mens_start.Date,
+                Last_Mens_End = last_mens_end.Date,
+                Next_Mens_Start = next_mens_start.Date,
+                Next_Mens_End = next_mens_end.Date,
+                Ovulation_Window_Start = ovulation_window_start.Date,
+                Ovulation_Window_End = ovulation_window_end.Date,
 
             };
             return getAllMenstruationDetails;
         }
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate )
+        {
+            var totalDays = currentMensDate.AddDays(28); 
+            var ovulation_day = (totalDays.AddDays(11));
+            var last_mens_start = (totalDays.AddDays(-28));
+            var last_mens_end = (totalDays.AddDays(-24));
+            var next_mens_start = (totalDays.AddDays(-1));
+            var next_mens_end = (totalDays.AddDays(3));
+            var ovulation_window_start = (ovulation_day.AddDays(-2));
+            var ovulation_window_end = (ovulation_day.AddDays(2));
+           
+=======
+>>>>>>> Stashed changes
         public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate, DateTime previuosMensDate)
         {
             var date_diff = (currentMensDate.Date - previuosMensDate.Date);
@@ -664,24 +694,20 @@ namespace Embrace.General
             var safe_period2 = (currentMensDate.AddDays(9));
             var safe_period3 = (currentMensDate.AddDays(15));
             var safe_period4 = (currentMensDate.AddDays(37));
+>>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
 
 
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                MyCycle = date_diff.Days,
-                Ovulation_day = ovulation_day,
-                Last_ovulation = last_ovulation.Date,
-                Next_mens = next_mens.Date,
-                Next_ovulation = next_ovulation.Date,
-                Ovulation_window1 = ovulation_window1.Date,
-                Ovulation_window2 = ovulation_window2.Date,
-                Ovulation_window3 = ovulation_window3.Date,
-                Ovulation_window4 = ovulation_window4.Date,
-                Safe_period1 = safe_period1.Date,
-                Safe_period2 = safe_period2.Date,
-                Safe_period3 = safe_period3.Date,
-                Safe_period4 = safe_period4.Date,
+                MyCycle = totalDays.Day,
+                Ovulation_day = ovulation_day.Day,
+                Last_Mens_Start = last_mens_start.Date,
+                Last_Mens_End = last_mens_end.Date,
+                Next_Mens_Start = next_mens_start.Date,
+                Next_Mens_End = next_mens_end.Date,
+                Ovulation_Window_Start = ovulation_window_start.Date,
+                Ovulation_Window_End = ovulation_window_end.Date,
 
             };
             return getAllMenstruationDetails;
@@ -699,17 +725,13 @@ namespace Embrace.General
                 UniqueKey = menstruationdata.UniqueKey,
                 MyCycle = menstruationdata.MyCycle,
                 Ovulation_day = menstruationdata.Ovulation_day,
-                Last_ovulation = menstruationdata.Last_ovulation,
-                Next_mens = menstruationdata.Next_mens,
-                Next_ovulation = menstruationdata.Next_ovulation,
-                Ovulation_window1 = menstruationdata.Ovulation_window1,
-                Ovulation_window2 = menstruationdata.Ovulation_window2,
-                Ovulation_window3 = menstruationdata.Ovulation_window3,
-                Ovulation_window4 = menstruationdata.Ovulation_window4,
-                Safe_period1 = menstruationdata.Safe_period1,
-                Safe_period2 = menstruationdata.Safe_period2,
-                Safe_period3 = menstruationdata.Safe_period3,
-                Safe_period4 = menstruationdata.Safe_period4,
+                Last_Mens_Start = menstruationdata.Last_Mens_Start,
+                Last_Mens_End = menstruationdata.Last_Mens_End,
+                Next_Mens_Start = menstruationdata.Next_Mens_Start,
+                Next_Mens_End = menstruationdata.Next_Mens_End,
+                Ovulation_Window_Start = menstruationdata.Ovulation_Window_Start,
+                Ovulation_Window_End = menstruationdata.Ovulation_Window_End,
+               
             };
             menstruationDetails.Add(getAllMenstruationDetails);
             // FOR NEXT MONTH
@@ -768,20 +790,15 @@ namespace Embrace.General
             getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                UniqueKey = uniquekey,
-                MyCycle = date_diff.Days,
-                Ovulation_day = ovulation_day,
-                Last_ovulation = last_ovulation.Date,
-                Next_mens = next_mens.Date,
-                Next_ovulation = next_ovulation.Date,
-                Ovulation_window1 = ovulation_window1.Date,
-                Ovulation_window2 = ovulation_window2.Date,
-                Ovulation_window3 = ovulation_window3.Date,
-                Ovulation_window4 = ovulation_window4.Date,
-                Safe_period1 = safe_period1.Date,
-                Safe_period2 = safe_period2.Date,
-                Safe_period3 = safe_period3.Date,
-                Safe_period4 = safe_period4.Date,
+                UniqueKey = item.UniqueKey,
+                MyCycle = item.MyCycle,
+                Ovulation_day = item.Ovulation_day,
+                Last_Mens_Start = item.Last_Mens_Start,
+                Last_Mens_End = item.Last_Mens_End,
+                Next_Mens_Start = item.Next_Mens_Start,
+                Next_Mens_End = item.Next_Mens_End,
+                Ovulation_Window_Start = item.Ovulation_Window_Start,
+                Ovulation_Window_End = item.Ovulation_Window_End,
 
             };
             menstruationDetails.Add(getAllMenstruationDetails);
@@ -804,17 +821,13 @@ namespace Embrace.General
                     UniqueKey = item.UniqueKey,
                     MyCycle = item.MyCycle,
                     Ovulation_day = item.Ovulation_day,
-                    Last_ovulation = item.Last_ovulation,
-                    Next_mens = item.Next_mens,
-                    Next_ovulation = item.Next_ovulation,
-                    Ovulation_window1 = item.Ovulation_window1,
-                    Ovulation_window2 = item.Ovulation_window2,
-                    Ovulation_window3 = item.Ovulation_window3,
-                    Ovulation_window4 = item.Ovulation_window4,
-                    Safe_period1 = item.Safe_period1,
-                    Safe_period2 = item.Safe_period2,
-                    Safe_period3 = item.Safe_period3,
-                    Safe_period4 = item.Safe_period4,
+                    Last_Mens_Start = item.Last_Mens_Start,
+                    Last_Mens_End = item.Last_Mens_End,
+                    Next_Mens_Start = item.Next_Mens_Start,
+                    Next_Mens_End = item.Next_Mens_End,
+                    Ovulation_Window_Start = item.Ovulation_Window_Start,
+                    Ovulation_Window_End = item.Ovulation_Window_End,
+
                 };
                 menstruationDetails.Add(getAllMenstruationDetails);
             }
@@ -838,17 +851,13 @@ namespace Embrace.General
                     UniqueKey = item.UniqueKey,
                     MyCycle = item.MyCycle,
                     Ovulation_day = item.Ovulation_day,
-                    Last_ovulation = item.Last_ovulation,
-                    Next_mens = item.Next_mens,
-                    Next_ovulation = item.Next_ovulation,
-                    Ovulation_window1 = item.Ovulation_window1,
-                    Ovulation_window2 = item.Ovulation_window2,
-                    Ovulation_window3 = item.Ovulation_window3,
-                    Ovulation_window4 = item.Ovulation_window4,
-                    Safe_period1 = item.Safe_period1,
-                    Safe_period2 = item.Safe_period2,
-                    Safe_period3 = item.Safe_period3,
-                    Safe_period4 = item.Safe_period4,
+                    Last_Mens_Start = item.Last_Mens_Start,
+                    Last_Mens_End = item.Last_Mens_End,
+                    Next_Mens_Start = item.Next_Mens_Start,
+                    Next_Mens_End = item.Next_Mens_End,
+                    Ovulation_Window_Start = item.Ovulation_Window_Start,
+                    Ovulation_Window_End = item.Ovulation_Window_End,
+                  
                 };
                 menstruationDetails.Add(getAllMenstruationDetails);
             }
@@ -1255,6 +1264,7 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllBlogDto> GetAllBlogs(PagedResultRequestDto input, long tenantId)
         {
+<<<<<<< Updated upstream
 
             var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
                         join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
@@ -1271,6 +1281,24 @@ namespace Embrace.General
             var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var result = new PagedResultDto<Entities.Blog.Dto.GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
 
+=======
+
+            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
+                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
+
+                        select new GetAllBlogDto()
+                        {
+                            Id = b.Id,
+                            Title = b.Title,
+                            Description = b.Description,
+                            CategoryId = b.CategoryId,
+                            CategoryName = bc.Name
+                        };
+
+            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<Entities.Blog.Dto.GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
+
+>>>>>>> Stashed changes
             return result;
 
         }

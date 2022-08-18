@@ -14,16 +14,11 @@ namespace Embrace.General.Dto
         public string UniqueKey { get; set; }
         public int MyCycle { get; set; }
         public int Ovulation_day { get; set; }
-        public DateTime Last_ovulation { get; set; }
-        public DateTime Next_mens { get; set; }
-        public DateTime Next_ovulation { get; set; }
-        public DateTime Ovulation_window1 { get; set; }
-        public DateTime Ovulation_window2 { get; set; }
-        public DateTime Ovulation_window3 { get; set; }
-        public DateTime Ovulation_window4 { get; set; }
-        public DateTime Safe_period1 { get; set; }
-        public DateTime Safe_period2 { get; set; }
-        public DateTime Safe_period3 { get; set; }
-        public DateTime Safe_period4 { get; set; }
+        public DateTime Last_Mens_Start { get; set; }
+        public DateTime Last_Mens_End { get; set; }
+        public DateTime Next_Mens_Start { get; set; }
+        public DateTime Next_Mens_End { get; set; }
+        public DateTime Ovulation_Window_Start { get; set; }
+        public DateTime Ovulation_Window_End { get; set; }
     }
 }
