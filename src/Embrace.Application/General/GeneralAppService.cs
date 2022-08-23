@@ -11,8 +11,6 @@ using Abp.UI;
 using Embrace.Authorization.Users;
 using Embrace.Entites.SubCategory.Dto;
 using Embrace.Entities;
-using Embrace.Entities.Blog.Dto;
-using Embrace.Entities.BlogCategory.Dto;
 using Embrace.Entities.OrderPlacement.Dto;
 using Embrace.General.Dto;
 using Embrace.Quartz;
@@ -42,8 +40,6 @@ namespace Embrace.General
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
         private readonly IRepository<SizeInfo, long> _sizeRepository;
         private readonly IRepository<ProductParameterSizeAllocationInfo, long> _productParameterSizeAllocationRepository;
-        private readonly IRepository<BlogInfo, long> _blogRepository;
-        private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -67,9 +63,7 @@ namespace Embrace.General
         IRepository<SubCategoryImageAllocationInfo, long> subCategoryImageAllocationRepository,
         IRepository<SubCategoryInfo, long> subCategoryRepository,
         IRepository<CategoryInfo, long> categoryRepository,
-        IRepository<ProductParametersInfo, long> productParametersRepository,
-        IRepository<BlogInfo, long> blogRepository,
-        IRepository<BlogCategoryInfo, long> blogCategoryRepository
+        IRepository<ProductParametersInfo, long> productParametersRepository
 
           ) : base()
         {
@@ -91,8 +85,6 @@ namespace Embrace.General
             _orderPlacementRepository = orderPlacementRepository;
             _uniqueNameAndDateInfoRepository = uniqueNameAndDateInfoRepository;
             _productParametersRepository = productParametersRepository;
-            _blogRepository = blogRepository;
-            _blogCategoryRepository = blogCategoryRepository;
 
         }
 
@@ -157,14 +149,14 @@ namespace Embrace.General
             menstration.TenantId = input.TenantId;
             menstration.UniqueKey = result.UniqueKey;
             menstration.MyCycle = menstruation.MyCycle;
-            menstration.Ovulation_day = menstruation.Ovulation_day;
+            menstration.Ovulation_date = menstruation.Ovulation_date;
             menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
             menstration.Last_Mens_End = menstruation.Last_Mens_End;
             menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
             menstration.Next_Mens_End = menstruation.Next_Mens_End;
             menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
             menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-           
+
 
             await _menstruationDetailsRepository.InsertAsync(menstration);
 
@@ -538,62 +530,46 @@ namespace Embrace.General
 
         public async Task<MenstruationDetailsInfo> CreateMenstruationDetails(MenstruationDetailsDto input)
         {
-            var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
-            if (uniquekey == null)
+            MenstruationDetailsInfo result = new MenstruationDetailsInfo();
+
+            try
             {
-                throw new UserFriendlyException("Invalid Unique Key");
+
+                var uniquekey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
+                if (uniquekey == null)
+                {
+                    throw new UserFriendlyException("Invalid Unique Key");
+                }
+
+                GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
+                menstruation = GetAllMenstruation(uniquekey.StartDatePeriod);
+
+                result = new MenstruationDetailsInfo();
+                result.TenantId = input.TenantId;
+                result.UniqueKey = uniquekey.UniqueKey;
+                result.MyCycle = menstruation.MyCycle;
+                result.Ovulation_date = menstruation.Ovulation_date;
+                result.Last_Mens_Start = menstruation.Last_Mens_Start;
+                result.Last_Mens_End = menstruation.Last_Mens_End;
+                result.Next_Mens_Start = menstruation.Next_Mens_Start;
+                result.Next_Mens_End = menstruation.Next_Mens_End;
+                result.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+                result.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+
+                await _menstruationDetailsRepository.InsertAsync(result);
+
+                result.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
             }
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-            
-            GetAllMenstruationDetails menstruation =new GetAllMenstruationDetails();
-            menstruation = GetAllMenstruation(uniquekey.StartDatePeriod);
-            
-=======
->>>>>>> Stashed changes
 
-            GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
-            menstruation = GetAllMenstruation(uniquekey.StartDatePeriod, uniquekey.EndDatePeriod);
+            catch (Exception ex)
+            {
 
-<<<<<<< Updated upstream
-=======
->>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
->>>>>>> Stashed changes
-            var result = new MenstruationDetailsInfo();
-            result.TenantId = input.TenantId;
-            result.UniqueKey = uniquekey.UniqueKey;
-            result.MyCycle = menstruation.MyCycle;
-            result.Ovulation_day = menstruation.Ovulation_day;
-<<<<<<< HEAD
-            result.Last_Mens_Start = menstruation.Last_Mens_Start;
-            result.Last_Mens_End = menstruation.Last_Mens_End;
-            result.Next_Mens_Start = menstruation.Next_Mens_Start;
-            result.Next_Mens_End = menstruation.Next_Mens_End;
-            result.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
-            result.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-=======
-            result.Last_ovulation = menstruation.Last_ovulation;
-            result.Next_mens = menstruation.Next_mens;
-            result.Next_ovulation = menstruation.Next_ovulation;
-            result.Ovulation_window1 = menstruation.Ovulation_window1;
-            result.Ovulation_window2 = menstruation.Ovulation_window2;
-            result.Ovulation_window3 = menstruation.Ovulation_window3;
-            result.Safe_period1 = menstruation.Safe_period1;
-            result.Safe_period2 = menstruation.Safe_period2;
-            result.Safe_period3 = menstruation.Safe_period3;
-            result.Safe_period4 = menstruation.Safe_period4;
-<<<<<<< Updated upstream
-=======
->>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
->>>>>>> Stashed changes
-
-            await _menstruationDetailsRepository.InsertAsync(result);
-
-            result.IsActive = true;
-
-            CurrentUnitOfWork.SaveChanges();
+                throw;
+            }
             var data = ObjectMapper.Map<MenstruationDetailsInfo>(result);
+
             return data;
 
         }
@@ -646,13 +622,11 @@ namespace Embrace.General
             var ovulation_window_start = (ovulation_day.AddDays(-2));
             var ovulation_window_end = (ovulation_day.AddDays(2));
 
-
-
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                MyCycle = totalDays.Day,
-                Ovulation_day = ovulation_day.Day,
+                MyCycle = totalDays.Date,
+                Ovulation_date = ovulation_day.Date,
                 Last_Mens_Start = last_mens_start.Date,
                 Last_Mens_End = last_mens_end.Date,
                 Next_Mens_Start = next_mens_start.Date,
@@ -663,12 +637,9 @@ namespace Embrace.General
             };
             return getAllMenstruationDetails;
         }
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate )
+        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate)
         {
-            var totalDays = currentMensDate.AddDays(28); 
+            var totalDays = currentMensDate.AddDays(28);
             var ovulation_day = (totalDays.AddDays(11));
             var last_mens_start = (totalDays.AddDays(-28));
             var last_mens_end = (totalDays.AddDays(-24));
@@ -676,32 +647,14 @@ namespace Embrace.General
             var next_mens_end = (totalDays.AddDays(3));
             var ovulation_window_start = (ovulation_day.AddDays(-2));
             var ovulation_window_end = (ovulation_day.AddDays(2));
-           
-=======
->>>>>>> Stashed changes
-        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate, DateTime previuosMensDate)
-        {
-            var date_diff = (currentMensDate.Date - previuosMensDate.Date);
-            var ovulation_day = (date_diff.Days - 14);
-            var last_ovulation = (currentMensDate.AddDays(-14));
-            var next_mens = (currentMensDate.AddDays(date_diff.Days));
-            var next_ovulation = (next_mens.AddDays(-14));
-            var ovulation_window1 = (currentMensDate.AddDays(-18));
-            var ovulation_window2 = (currentMensDate.AddDays(-14));
-            var ovulation_window3 = (next_mens.AddDays(-18));
-            var ovulation_window4 = (next_mens.AddDays(-14));
-            var safe_period1 = currentMensDate.Date;
-            var safe_period2 = (currentMensDate.AddDays(9));
-            var safe_period3 = (currentMensDate.AddDays(15));
-            var safe_period4 = (currentMensDate.AddDays(37));
->>>>>>> 1f0097e6bacd04e6df6e59d5af82ca58eae41a82
+
 
 
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                MyCycle = totalDays.Day,
-                Ovulation_day = ovulation_day.Day,
+                MyCycle = totalDays.Date,
+                Ovulation_date = ovulation_day.Date,
                 Last_Mens_Start = last_mens_start.Date,
                 Last_Mens_End = last_mens_end.Date,
                 Next_Mens_Start = next_mens_start.Date,
@@ -724,81 +677,68 @@ namespace Embrace.General
             {
                 UniqueKey = menstruationdata.UniqueKey,
                 MyCycle = menstruationdata.MyCycle,
-                Ovulation_day = menstruationdata.Ovulation_day,
+                Ovulation_date = menstruationdata.Ovulation_date,
                 Last_Mens_Start = menstruationdata.Last_Mens_Start,
                 Last_Mens_End = menstruationdata.Last_Mens_End,
                 Next_Mens_Start = menstruationdata.Next_Mens_Start,
                 Next_Mens_End = menstruationdata.Next_Mens_End,
                 Ovulation_Window_Start = menstruationdata.Ovulation_Window_Start,
                 Ovulation_Window_End = menstruationdata.Ovulation_Window_End,
-               
+
             };
             menstruationDetails.Add(getAllMenstruationDetails);
             // FOR NEXT MONTH
 
-            var date_diff = (menstruationDetails[0].Next_mens.AddDays(menstruationDetails[0].MyCycle) - menstruationDetails[0].Next_mens);
-            var ovulation_day = (date_diff.Days - 14);
-            var last_ovulation = (menstruationDetails[0].Next_mens.AddDays(-14));
-            var next_mens = (menstruationDetails[0].Next_mens.AddDays(date_diff.Days));
-            var next_ovulation = (next_mens.AddDays(-14));
-            var ovulation_window1 = (menstruationDetails[0].Next_mens.AddDays(-18));
-            var ovulation_window2 = (menstruationDetails[0].Next_mens.AddDays(-14));
-            var ovulation_window3 = (next_mens.AddDays(-18));
-            var ovulation_window4 = (next_mens.AddDays(-14));
-            var safe_period1 = menstruationDetails[0].Next_mens.Date;
-            var safe_period2 = (menstruationDetails[0].Next_mens.AddDays(9));
-            var safe_period3 = (menstruationDetails[0].Next_mens.AddDays(15));
-            var safe_period4 = (menstruationDetails[0].Next_mens.AddDays(menstruationDetails[0].MyCycle).AddDays(37));
+            var totalDays = menstruationDetails[0].MyCycle.AddDays(28);
+            var ovulation_date = totalDays.AddDays(11);
+            var last_mens_start = totalDays.AddDays(-28);
+            var last_mens_end = totalDays.AddDays(-24);
+            var next_mens_start = totalDays.AddDays(-1);
+            var next_mens_end = totalDays.AddDays(3);
+            var ovulation_window_start = ovulation_date.AddDays(-2);
+            var ovulation_window_end = ovulation_date.AddDays(2);
+
 
 
             getAllMenstruationDetails = new GetAllMenstruationDetails
             {
-
-                MyCycle = date_diff.Days,
-                Ovulation_day = ovulation_day,
-                Last_ovulation = last_ovulation.Date,
-                Next_mens = next_mens.Date,
-                Next_ovulation = next_ovulation.Date,
-                Ovulation_window1 = ovulation_window1.Date,
-                Ovulation_window2 = ovulation_window2.Date,
-                Ovulation_window3 = ovulation_window3.Date,
-                Ovulation_window4 = ovulation_window4.Date,
-                Safe_period1 = safe_period1.Date,
-                Safe_period2 = safe_period2.Date,
-                Safe_period3 = safe_period3.Date,
-                Safe_period4 = safe_period4.Date,
+                UniqueKey = uniquekey,
+                MyCycle = totalDays.Date,
+                Ovulation_date = ovulation_date.Date,
+                Last_Mens_Start = last_mens_start.Date,
+                Last_Mens_End = last_mens_end.Date,
+                Next_Mens_Start = next_mens_start.Date,
+                Next_Mens_End = next_mens_end.Date,
+                Ovulation_Window_Start = ovulation_window_start.Date,
+                Ovulation_Window_End = ovulation_window_end.Date,
 
             };
             menstruationDetails.Add(getAllMenstruationDetails);
 
             // FOR NEXT MONTH
 
-            date_diff = (menstruationDetails[1].Next_mens.AddDays(menstruationDetails[1].MyCycle) - menstruationDetails[1].Next_mens);
-            ovulation_day = (date_diff.Days - 14);
-            last_ovulation = (menstruationDetails[1].Next_mens.AddDays(-14));
-            next_mens = (menstruationDetails[1].Next_mens.AddDays(date_diff.Days));
-            next_ovulation = (next_mens.AddDays(-14));
-            ovulation_window1 = (menstruationDetails[1].Next_mens.AddDays(-18));
-            ovulation_window2 = (menstruationDetails[1].Next_mens.AddDays(-14));
-            ovulation_window3 = (next_mens.AddDays(-18));
-            ovulation_window4 = (next_mens.AddDays(-14));
-            safe_period1 = menstruationDetails[1].Next_mens.Date;
-            safe_period2 = (menstruationDetails[1].Next_mens.AddDays(9));
-            safe_period3 = (menstruationDetails[1].Next_mens.AddDays(15));
-            safe_period4 = (menstruationDetails[1].Next_mens.AddDays(37));
+
+            var totalDays1 = menstruationDetails[1].MyCycle.AddDays(28);
+            var ovulation_date1 = totalDays.AddDays(11);
+            var last_mens_start1 = totalDays.AddDays(-28);
+            var last_mens_end1 = totalDays.AddDays(-24);
+            var next_mens_start1 = totalDays.AddDays(-1);
+            var next_mens_end1 = totalDays.AddDays(3);
+            var ovulation_window_start1 = ovulation_date.AddDays(-2);
+            var ovulation_window_end1 = ovulation_date.AddDays(2);
 
             getAllMenstruationDetails = new GetAllMenstruationDetails
             {
 
-                UniqueKey = item.UniqueKey,
-                MyCycle = item.MyCycle,
-                Ovulation_day = item.Ovulation_day,
-                Last_Mens_Start = item.Last_Mens_Start,
-                Last_Mens_End = item.Last_Mens_End,
-                Next_Mens_Start = item.Next_Mens_Start,
-                Next_Mens_End = item.Next_Mens_End,
-                Ovulation_Window_Start = item.Ovulation_Window_Start,
-                Ovulation_Window_End = item.Ovulation_Window_End,
+                UniqueKey = uniquekey,
+                MyCycle = totalDays1.Date,
+                Ovulation_date = ovulation_date1.Date,
+                Last_Mens_Start = last_mens_start1.Date,
+                Last_Mens_End = last_mens_end1.Date,
+                Next_Mens_Start = next_mens_start1.Date,
+                Next_Mens_End = next_mens_end1.Date,
+                Ovulation_Window_Start = ovulation_window_start1.Date,
+                Ovulation_Window_End = ovulation_window_end1.Date,
 
             };
             menstruationDetails.Add(getAllMenstruationDetails);
@@ -820,7 +760,7 @@ namespace Embrace.General
                 {
                     UniqueKey = item.UniqueKey,
                     MyCycle = item.MyCycle,
-                    Ovulation_day = item.Ovulation_day,
+                    Ovulation_date = item.Ovulation_date,
                     Last_Mens_Start = item.Last_Mens_Start,
                     Last_Mens_End = item.Last_Mens_End,
                     Next_Mens_Start = item.Next_Mens_Start,
@@ -850,14 +790,14 @@ namespace Embrace.General
                 {
                     UniqueKey = item.UniqueKey,
                     MyCycle = item.MyCycle,
-                    Ovulation_day = item.Ovulation_day,
+                    Ovulation_date = item.Ovulation_date,
                     Last_Mens_Start = item.Last_Mens_Start,
                     Last_Mens_End = item.Last_Mens_End,
                     Next_Mens_Start = item.Next_Mens_Start,
                     Next_Mens_End = item.Next_Mens_End,
                     Ovulation_Window_Start = item.Ovulation_Window_Start,
                     Ovulation_Window_End = item.Ovulation_Window_End,
-                  
+
                 };
                 menstruationDetails.Add(getAllMenstruationDetails);
             }
@@ -888,7 +828,7 @@ namespace Embrace.General
         public PagedResultDto<GetAllSubCategoryAndDateDto> GetAllSubCategoryAndDate(PagedResultRequestDto input, int tenantId)
         {
 
-            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true  && x.TenantId == tenantId)
+            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
                         join ca in _subCategoryRepository.GetAll() on sb.SubCategoryId equals ca.Id
                         select new GetAllSubCategoryAndDateDto()
                         {
@@ -956,101 +896,42 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllProductParametersDto> GetAllProductsByCategoryName(PagedResultRequestDto input, string categoryName)
         {
-            categoryName = categoryName != null ? categoryName : string.Empty;
             List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
-            List<SizeInfo> productSizes = new List<SizeInfo>();
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
             List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
-            List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
 
             productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
-            if (productVariants.Count == 0)
-            {
-                throw new UserFriendlyException("Product Variants are missing");
-            }
-            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
-            if (productSizes.Count == 0)
-            {
-                throw new UserFriendlyException("Product Sizes are missing");
-            }
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Name == categoryName.ToLower()).FirstOrDefault();
+            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
 
-            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId
-            && x.Name == categoryName).FirstOrDefault();
-            if (productCategoryData == null)
+            foreach (var item in productvariant)
             {
-                throw new UserFriendlyException("No Product Category Found");
-            }
-            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id
-            && x.TenantId == AbpSession.TenantId).ToList();
-            if (productparameters == null)
-            {
-                throw new UserFriendlyException("No Product Parameters Found");
-            }
-            foreach (var productparametersItem in productparameters)
-            {
-                productvariants = new List<GetAllProductVariantsDto>();
-                productsizes = new List<GetAllProductSizeDto>();
-
-                // For Product Parameter Variant Allocation
-                var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
-                if (productvariant.Count != 0)
+                var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
                 {
 
-                    foreach (var item in productvariant)
-                    {
-                        var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-                        GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
-                        {
+                    VariantId = variants.Id,
+                    VariantName = variants.Name
 
-                            VariantId = variants.Id,
-                            VariantName = variants.Name
-
-                        };
-                        productvariants.Add(getAllvaranits);
-                    }
-                }
-
-                // For Product Parameter Size Allocation
-                var productSize = _productParameterSizeAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparametersItem.Id).ToList();
-                if (productSize.Count != 0)
-                {
-
-                    foreach (var sizeItem in productSize)
-                    {
-                        var sizes = productSizes.Where(x => x.Id == sizeItem.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
-                        GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
-                        {
-
-                            SizeId = sizes.Id,
-                            SizeName = sizes.Name
-
-                        };
-                        productsizes.Add(getAllsizes);
-                    }
-                }
-
-                GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
-                {
-
-                    Id = productparametersItem.Id,
-                    ProductName = productparametersItem.ProductName,
-                    ProductImage = productparametersItem.ProductImage,
-                    Description = productparametersItem.Description,
-                    Price = productparametersItem.Price,
-                    ProductCategoryId = productCategoryData.Id,
-                    ProductCategoryName = productCategoryData.Name,
-                    ProductVariants = productvariants,
-                    ProductSizes = productsizes,
                 };
-                productParametersDtos.Add(getAllProduct);
-
+                productvariants.Add(getAllvaranits);
             }
-            //var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => x.ProductParameterId == productparameters.Id).ToList();
-            //if (productvariant.Count == 0)
-            //{
-            //    throw new UserFriendlyException("No Product Parameter Variant Allocation Found");
-            //}
 
+            GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
+            {
+
+                Id = productparameters.Id,
+                ProductName = productparameters.ProductName,
+                ProductImage = productparameters.ProductImage,
+                Description = productparameters.Description,
+                ProductCategoryId = productCategoryData.Id,
+                ProductCategoryName = productCategoryData.Name,
+                ProductVariants = productvariants,
+
+                Price = productparameters.Price,
+            };
+            productParametersDtos.Add(getAllProduct);
 
             var result = new PagedResultDto<GetAllProductParametersDto>(productParametersDtos.Count(), ObjectMapper.Map<List<GetAllProductParametersDto>>(productParametersDtos));
 
@@ -1260,120 +1141,11 @@ namespace Embrace.General
 
                 throw new UserFriendlyException(ex.Message);
             }
+
+
+
             return "Sending Mail Successfully";
-        }
-        public PagedResultDto<GetAllBlogDto> GetAllBlogs(PagedResultRequestDto input, long tenantId)
-        {
-<<<<<<< Updated upstream
 
-            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
-                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
-
-                        select new GetAllBlogDto()
-                        {
-                            Id = b.Id,
-                            Title = b.Title,
-                            Description = b.Description,
-                            CategoryId = b.CategoryId,
-                            CategoryName = bc.Name
-                        };
-
-            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var result = new PagedResultDto<Entities.Blog.Dto.GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
-
-=======
-
-            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
-                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
-
-                        select new GetAllBlogDto()
-                        {
-                            Id = b.Id,
-                            Title = b.Title,
-                            Description = b.Description,
-                            CategoryId = b.CategoryId,
-                            CategoryName = bc.Name
-                        };
-
-            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var result = new PagedResultDto<Entities.Blog.Dto.GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
-
->>>>>>> Stashed changes
-            return result;
-
-        }
-        public PagedResultDto<GetAllBlogDto> GetAllBlogsByCategoryId(PagedResultRequestDto input, long categoryId, long tenantId)
-        {
-
-            var query = from b in _blogRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId
-                        && x.CategoryId == categoryId)
-                        join bc in _blogCategoryRepository.GetAll() on b.CategoryId equals bc.Id
-
-                        select new GetAllBlogDto()
-                        {
-                            Id = b.Id,
-                            Title = b.Title,
-                            Description = b.Description,
-                            CategoryId = b.CategoryId,
-                            CategoryName = bc.Name
-                        };
-
-            var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var result = new PagedResultDto<GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(dataList));
-
-            return result;
-
-        }
-        public PagedResultDto<BlogCategoryDto> GetAllBlogCategory(PagedResultRequestDto input, long tenantId)
-        {
-
-            var dataBlogCategory = _blogCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId).ToList();
-            var statelist = dataBlogCategory.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-
-            var result = new PagedResultDto<BlogCategoryDto>(statelist.Count(), ObjectMapper.Map<List<BlogCategoryDto>>(statelist));
-            return result;
-        }
-        public PagedResultDto<GetAllBlogsWithBlogCategoryDto> GetAllBlogsWithBlogCategory(PagedResultRequestDto input)
-        {
-            List<BlogCategoryInfo> blogCategories = new List<BlogCategoryInfo>();
-            List<BlogInfo> blogs = new List<BlogInfo>();
-
-            List<GetAllBlogsWithBlogCategoryDto> blogsWithBlogCategoryDto = new List<GetAllBlogsWithBlogCategoryDto>();
-
-            blogCategories = _blogCategoryRepository.GetAll().ToList();
-            blogs = _blogRepository.GetAll().ToList();
-
-
-            foreach (var blogCategoriesItem in blogCategories)
-            {
-                List<GetAllGeneralBlogDto> blogList = new List<GetAllGeneralBlogDto>();
-
-                var blogsData = blogs.Where(x => x.CategoryId == blogCategoriesItem.Id).ToList();
-                foreach (var blogsDataItem in blogsData)
-                {
-                    GetAllGeneralBlogDto getAllBlogs = new GetAllGeneralBlogDto()
-                    {
-                        Id = blogsDataItem.Id,
-                        Title = blogsDataItem.Title,
-                        Description = blogsDataItem.Description,
-                        CategoryId = blogsDataItem.CategoryId,
-                        ImageUrl = blogsDataItem.ImageUrl
-                    };
-                    blogList.Add(getAllBlogs);
-                }
-
-                GetAllBlogsWithBlogCategoryDto getAllBlog = new GetAllBlogsWithBlogCategoryDto()
-                {
-                    Id = blogCategoriesItem.Id,
-                    CategoryName = blogCategoriesItem.Name,
-                    BlogsData = blogList
-                };
-                blogsWithBlogCategoryDto.Add(getAllBlog);
-
-            }
-
-            var result = new PagedResultDto<GetAllBlogsWithBlogCategoryDto>(blogsWithBlogCategoryDto.Count(), ObjectMapper.Map<List<GetAllBlogsWithBlogCategoryDto>>(blogsWithBlogCategoryDto));
-            return result;
 
         }
     }

@@ -1751,43 +1751,28 @@ namespace Embrace.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("Last_ovulation")
+                    b.Property<DateTime>("Last_Mens_End")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MyCycle")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Next_mens")
+                    b.Property<DateTime>("Last_Mens_Start")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Next_ovulation")
+                    b.Property<DateTime>("MyCycle")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Ovulation_day")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Ovulation_window1")
+                    b.Property<DateTime>("Next_Mens_End")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Ovulation_window2")
+                    b.Property<DateTime>("Next_Mens_Start")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Ovulation_window3")
+                    b.Property<DateTime>("Ovulation_Window_End")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Ovulation_window4")
+                    b.Property<DateTime>("Ovulation_Window_Start")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Safe_period1")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period2")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period3")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Safe_period4")
+                    b.Property<DateTime>("Ovulation_date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TenantId")
