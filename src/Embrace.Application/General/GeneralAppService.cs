@@ -136,41 +136,79 @@ namespace Embrace.General
         }
         public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueNameWithDate(CreateUniqueNameWithDateDto input)
         {
+            GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
+            UniqueNameAndDateInfo result = new UniqueNameAndDateInfo();
             var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).OrderByDescending(x => x.Id).FirstOrDefault();
 
-            var result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
-            result.Name = dataUniqueKey.Name;
-            result.StartDatePeriod = dataUniqueKey.EndDatePeriod;
-            result.EndDatePeriod = input.DateAndTime;
-            result.TenantId = input.TenantId;
-            result.UniqueKey = dataUniqueKey.UniqueKey;
-            result.DateAndTime = dataUniqueKey.DateAndTime;
-            await _uniqueNameAndDateInfoRepository.InsertAsync(result);
+           if (dataUniqueKey.StartDatePeriod.Date.Month == input.DateAndTime.Date.Month)
+           {
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
+                result.Name = dataUniqueKey.Name;
+                result.StartDatePeriod = input.DateAndTime;
+                result.TenantId = input.TenantId;
+                result.UniqueKey = dataUniqueKey.UniqueKey;
+                result.DateAndTime = dataUniqueKey.DateAndTime;
+                await _uniqueNameAndDateInfoRepository.UpdateAsync(result);
 
-            result.IsActive = true;
+                result.IsActive = true;
 
-            CurrentUnitOfWork.SaveChanges();
-            GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
-            menstruation = GetAllMenstruation(result.StartDatePeriod);
+                CurrentUnitOfWork.SaveChanges();
+                menstruation = GetAllMenstruation(result.StartDatePeriod);
+                var menstrationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
+                var menstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstrationdata);
+                menstration.TenantId = input.TenantId;
+                menstration.UniqueKey = result.UniqueKey;
+                menstration.MyCycle = menstruation.MyCycle;
+                menstration.Ovulation_date = menstruation.Ovulation_date;
+                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
+                menstration.Last_Mens_End = menstruation.Last_Mens_End;
+                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
+                menstration.Next_Mens_End = menstruation.Next_Mens_End;
+                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
 
-            var menstration = new MenstruationDetailsInfo();
-            menstration.TenantId = input.TenantId;
-            menstration.UniqueKey = result.UniqueKey;
-            menstration.MyCycle = menstruation.MyCycle;
-            menstration.Ovulation_date = menstruation.Ovulation_date;
-            menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
-            menstration.Last_Mens_End = menstruation.Last_Mens_End;
-            menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
-            menstration.Next_Mens_End = menstruation.Next_Mens_End;
-            menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
-            menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-           
 
-            await _menstruationDetailsRepository.InsertAsync(menstration);
+                await _menstruationDetailsRepository.UpdateAsync(menstration);
 
-            menstration.IsActive = true;
+                menstration.IsActive = true;
 
-            CurrentUnitOfWork.SaveChanges();
+                CurrentUnitOfWork.SaveChanges();
+            }
+            else
+            {
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
+                result.Name = dataUniqueKey.Name;
+                result.StartDatePeriod = input.DateAndTime;
+                result.TenantId = input.TenantId;
+                result.UniqueKey = dataUniqueKey.UniqueKey;
+                result.DateAndTime = dataUniqueKey.DateAndTime;
+                await _uniqueNameAndDateInfoRepository.InsertAsync(result);
+
+                result.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
+                menstruation = GetAllMenstruation(result.StartDatePeriod);
+                var menstration = new MenstruationDetailsInfo();
+                menstration.TenantId = input.TenantId;
+                menstration.UniqueKey = result.UniqueKey;
+                menstration.MyCycle = menstruation.MyCycle;
+                menstration.Ovulation_date = menstruation.Ovulation_date;
+                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
+                menstration.Last_Mens_End = menstruation.Last_Mens_End;
+                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
+                menstration.Next_Mens_End = menstruation.Next_Mens_End;
+                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+
+
+                await _menstruationDetailsRepository.InsertAsync(menstration);
+
+                menstration.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
+
+            }
+          
             var data = ObjectMapper.Map<UniqueNameAndDateUniqueKeyDto>(result);
             return data;
 
@@ -902,25 +940,24 @@ namespace Embrace.General
             List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
             List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
 
-            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productVariants = _productVariantsRepository.GetAll().ToList();
             if (productVariants.Count == 0)
             {
                 throw new UserFriendlyException("Product Variants are missing");
             }
-            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productSizes = _sizeRepository.GetAll().ToList();
             if (productSizes.Count == 0)
             {
                 throw new UserFriendlyException("Product Sizes are missing");
             }
 
-            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true 
             && x.Name == categoryName).FirstOrDefault();
             if (productCategoryData == null)
             {
                 throw new UserFriendlyException("No Product Category Found");
             }
-            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id
-            && x.TenantId == AbpSession.TenantId).ToList();
+            var productparameters = _productParametersRepository.GetAll().Where(x => x.ProductCategoryId == productCategoryData.Id).ToList();
             if (productparameters == null)
             {
                 throw new UserFriendlyException("No Product Parameters Found");
@@ -937,7 +974,7 @@ namespace Embrace.General
 
                     foreach (var item in productvariant)
                     {
-                        var variants = productVariants.Where(x => x.Id == item.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        var variants = productVariants.Where(x => x.Id == item.ProductVariantId).FirstOrDefault();
                         GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
                         {
 
@@ -956,7 +993,7 @@ namespace Embrace.General
 
                     foreach (var sizeItem in productSize)
                     {
-                        var sizes = productSizes.Where(x => x.Id == sizeItem.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                        var sizes = productSizes.Where(x => x.Id == sizeItem.SizeId).FirstOrDefault();
                         GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
                         {
 
@@ -998,15 +1035,15 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllProductParametersDto> GetAllProductParameters(PagedResultRequestDto input)
         {
-            List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
+                List<ProductVariantsInfo> productVariants = new List<ProductVariantsInfo>();
             List<SizeInfo> productSizes = new List<SizeInfo>();
 
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
 
-            productVariants = _productVariantsRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
-            productSizes = _sizeRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            productVariants = _productVariantsRepository.GetAll().ToList();
+            productSizes = _sizeRepository.GetAll().ToList();
 
-            var productparameters = _productParametersRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            var productparameters = _productParametersRepository.GetAll().ToList();
             var productlist = productparameters.Select(x => x.Id).ToList();
 
             var productvariant = _productParameterVariantAllocationRepository.GetAll().Where(x => productlist.Contains(x.ProductParameterId)).ToList();
@@ -1017,11 +1054,11 @@ namespace Embrace.General
                 List<GetAllProductVariantsDto> productvariants = new List<GetAllProductVariantsDto>();
                 List<GetAllProductSizeDto> productsizes = new List<GetAllProductSizeDto>();
 
-                var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true ).FirstOrDefault();
 
                 foreach (var itemVariant in productvariant)
                 {
-                    var variants = productVariants.Where(x => x.Id == itemVariant.ProductVariantId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    var variants = productVariants.Where(x => x.Id == itemVariant.ProductVariantId).FirstOrDefault();
                     GetAllProductVariantsDto getAllvaranits = new GetAllProductVariantsDto()
                     {
 
@@ -1034,7 +1071,7 @@ namespace Embrace.General
                 }
                 foreach (var itemSize in productsize)
                 {
-                    var sizes = productSizes.Where(x => x.Id == itemSize.SizeId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+                    var sizes = productSizes.Where(x => x.Id == itemSize.SizeId ).FirstOrDefault();
                     GetAllProductSizeDto getAllsizes = new GetAllProductSizeDto()
                     {
 
@@ -1213,7 +1250,8 @@ namespace Embrace.General
                             Title = b.Title,
                             Description = b.Description,
                             CategoryId = b.CategoryId,
-                            CategoryName = bc.Name
+                            CategoryName = bc.Name,
+                            ImageUrl = b.ImageUrl
                         };
 
             var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
@@ -1235,7 +1273,8 @@ namespace Embrace.General
                             Title = b.Title,
                             Description = b.Description,
                             CategoryId = b.CategoryId,
-                            CategoryName = bc.Name
+                            CategoryName = bc.Name,
+                            ImageUrl = b.ImageUrl
                         };
 
             var dataList = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

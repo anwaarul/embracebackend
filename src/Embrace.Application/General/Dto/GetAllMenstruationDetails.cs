@@ -13,7 +13,7 @@ namespace Embrace.General.Dto
     {
         public string UniqueKey { get; set; }
         public DateTime MyCycle { get; set; }
-        public DateTime Ovulation_day { get; set; }
+        public DateTime Ovulation_date { get; set; }
         public DateTime Last_Mens_Start { get; set; }
         public DateTime Last_Mens_End { get; set; }
         public DateTime Next_Mens_Start { get; set; }
