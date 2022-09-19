@@ -14,9 +14,7 @@ namespace Embrace.General.Dto
         public string ProductCategoryName { get; set; }
         public string ProductImage { get; set; }
         public string Description { get; set; }
-        public List<GetAllProductVariantsDto> ProductVariants { get; set; }
         public List<GetAllProductImageDto> Images { get; set; }
-        public List<GetAllProductSizeDto> Size { get; set; }
         public double Price { get; set; }
 
     }

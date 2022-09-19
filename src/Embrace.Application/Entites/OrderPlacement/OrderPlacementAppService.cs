@@ -55,8 +55,6 @@ namespace Embrace.Entites.OrderPlacement
             var data = ObjectMapper.Map<OrderPlacementInfo>(input);
             data.UserUniqueName = input.UserUniqueName;
             data.ProductName = input.ProductName; 
-            data.VarientName = input.VarientName; 
-            data.SizeName = input.SizeName; 
             data.Address = input.Address; 
             data.CityName = input.CityName; 
             data.FirstName = input.FirstName; 
@@ -64,6 +62,7 @@ namespace Embrace.Entites.OrderPlacement
             data.ContactNumber = input.ContactNumber; 
             data.CountryName = input.CountryName; 
             data.ZipPostalCode = input.ZipPostalCode; 
+            data.Quantity = input.Quantity; 
             data.LastModificationTime = DateTime.Now;
             data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
 

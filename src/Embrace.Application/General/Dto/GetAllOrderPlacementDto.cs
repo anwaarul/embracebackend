@@ -11,12 +11,10 @@ namespace Embrace.General.Dto
     {
         public string UserUniqueName { get; set; }
         public string ProductName { get; set; }
-        public string VarientName { get; set; }
-        public string SizeName { get; set; }
+        public double Quantity { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
 
      
-
     }
 }

@@ -156,8 +156,6 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
                             OrderPaymentId = so.OrderPaymentId,
                             UserUniqueName = o.UserUniqueName,
                             ProductName = o.ProductName,
-                            VarientName = o.VarientName,
-                            SizeName = o.SizeName,
                             Address = o.Address,
                             CityName = o.CityName,
                             FirstName = o.FirstName,
