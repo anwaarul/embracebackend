@@ -23,7 +23,9 @@ namespace Embrace.Quartz
     public class OrderJob : IJob
     {
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task Execute(IJobExecutionContext context)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             JobDataMap dataMap = context.MergedJobDataMap;
             var tenant = dataMap.GetLongValue("tenant");

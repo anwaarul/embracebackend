@@ -10,7 +10,7 @@ namespace Embrace.EntityFrameworkCore
     public class EmbraceDbContext : AbpZeroDbContext<Tenant, Role, User, EmbraceDbContext>
     {
         /* Define a DbSet for each entity of the application */
-        
+
         public EmbraceDbContext(DbContextOptions<EmbraceDbContext> options)
             : base(options)
         {
@@ -32,7 +32,7 @@ namespace Embrace.EntityFrameworkCore
         public DbSet<CategoryInfo> CategoryInfo { get; set; }
         public DbSet<BlogInfo> BlogInfo { get; set; }
         public DbSet<BlogCategoryInfo> BlogCategoryInfo { get; set; }
-        public DbSet<BlogBlogCategoryAllocationInfo> BlogBlogCategoryAllocationInfo { get; set; }    
-
+        public DbSet<BlogBlogCategoryAllocationInfo> BlogBlogCategoryAllocationInfo { get; set; }
+        public DbSet<AlertInfo> AlertInfo { get; set; }
     }
 }

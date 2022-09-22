@@ -22,7 +22,9 @@ namespace Embrace.EntityFrameworkCore.Seed.Host
 
             if (EmbraceConsts.MultiTenancyEnabled == false)
             {
+#pragma warning disable CS0162 // Unreachable code detected
                 tenantId = MultiTenancyConsts.DefaultTenantId;
+#pragma warning restore CS0162 // Unreachable code detected
             }
 
             // Emailing
