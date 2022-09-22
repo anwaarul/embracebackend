@@ -12,7 +12,7 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.Pages_Users_Activation, L("UsersActivation"));
             context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
             context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
-            
+
             //Category Permission
 
             context.CreatePermission(PermissionNames.LookUps_Category, L("Category"));
@@ -77,7 +77,7 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Create, L("CreateSubCategory"));
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Update, L("UpdateSubCategory"));
             context.CreatePermission(PermissionNames.LookUps_SubCategory_Delete, L("DeleteSubCategory"));
-            
+
             //UsersDetails Permission
             context.CreatePermission(PermissionNames.LookUps_UsersDetails, L("UsersDetails"));
             context.CreatePermission(PermissionNames.LookUps_UsersDetails_Page, L("PageUsersDetails"));
@@ -168,6 +168,13 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Create, L("CreateBlogBlogCategoryAllocation"));
             context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Update, L("UpdateBlogBlogCategoryAllocation"));
             context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Delete, L("DeleteBlogBlogCategoryAllocation"));
+
+            //Alert Permission
+            context.CreatePermission(PermissionNames.LookUps_Alert, L("Alert"));
+            context.CreatePermission(PermissionNames.LookUps_Alert_Page, L("PageAlert"));
+            context.CreatePermission(PermissionNames.LookUps_Alert_Create, L("CreateAlert"));
+            context.CreatePermission(PermissionNames.LookUps_Alert_Update, L("UpdateAlert"));
+            context.CreatePermission(PermissionNames.LookUps_Alert_Delete, L("DeleteAlert"));
 
         }
 

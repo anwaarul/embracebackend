@@ -8,6 +8,7 @@ namespace Embrace.Entities
 {
     public class AlertInfo : EmbraceProjBaseEntity
     {
+        public string UniqueKey { get; set; }
         public string Message { get; set; }
     }
 }
