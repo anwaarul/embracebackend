@@ -163,13 +163,6 @@
         public const string LookUps_BlogBlogCategoryAllocation_Create = "LookUps.BlogBlogCategoryAllocation.Create";
         public const string LookUps_BlogBlogCategoryAllocation_Update = "LookUps.BlogBlogCategoryAllocation.Update";
         public const string LookUps_BlogBlogCategoryAllocation_Delete = "LookUps.BlogBlogCategoryAllocation.Delete";
-
-        // Alert API Permission
-        public const string LookUps_Alert = "LookUps.Alert";
-        public const string LookUps_Alert_Page = "LookUps.Alert.Pages";
-        public const string LookUps_Alert_Create = "LookUps.Alert.Create";
-        public const string LookUps_Alert_Update = "LookUps.Alert.Update";
-        public const string LookUps_Alert_Delete = "LookUps.Alert.Delete";
     }
 
 

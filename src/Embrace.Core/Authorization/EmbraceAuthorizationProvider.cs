@@ -169,13 +169,6 @@ namespace Embrace.Authorization
             context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Update, L("UpdateBlogBlogCategoryAllocation"));
             context.CreatePermission(PermissionNames.LookUps_BlogBlogCategoryAllocation_Delete, L("DeleteBlogBlogCategoryAllocation"));
 
-            //Alert Permission
-            context.CreatePermission(PermissionNames.LookUps_Alert, L("Alert"));
-            context.CreatePermission(PermissionNames.LookUps_Alert_Page, L("PageAlert"));
-            context.CreatePermission(PermissionNames.LookUps_Alert_Create, L("CreateAlert"));
-            context.CreatePermission(PermissionNames.LookUps_Alert_Update, L("UpdateAlert"));
-            context.CreatePermission(PermissionNames.LookUps_Alert_Delete, L("DeleteAlert"));
-
         }
 
         private static ILocalizableString L(string name)

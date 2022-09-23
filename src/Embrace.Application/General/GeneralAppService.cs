@@ -9,6 +9,7 @@ using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Embrace.Authorization.Users;
+using Embrace.Entites.Alert.Dto;
 using Embrace.Entites.SubCategory.Dto;
 using Embrace.Entities;
 using Embrace.Entities.Blog.Dto;
@@ -40,6 +41,7 @@ namespace Embrace.General
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
         private readonly IRepository<BlogInfo, long> _blogRepository;
         private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
+        private readonly IRepository<AlertInfo, long> alert_repo;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -61,8 +63,8 @@ namespace Embrace.General
         IRepository<CategoryInfo, long> categoryRepository,
         IRepository<ProductParametersInfo, long> productParametersRepository,
         IRepository<BlogInfo, long> blogRepository,
-        IRepository<BlogCategoryInfo, long> blogCategoryRepository
-
+        IRepository<BlogCategoryInfo, long> blogCategoryRepository,
+        IRepository<AlertInfo, long> alert_repo
           ) : base()
         {
             _subscriptionRepository = subscriptionRepository;
@@ -81,7 +83,7 @@ namespace Embrace.General
             _productParametersRepository = productParametersRepository;
             _blogRepository = blogRepository;
             _blogCategoryRepository = blogCategoryRepository;
-
+            this.alert_repo = alert_repo;
         }
 
         public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueKeyWithNameAndDateTime(UniqueNameAndDateDto input)
@@ -1248,6 +1250,31 @@ namespace Embrace.General
             var result = new PagedResultDto<GetAllBlogsWithBlogCategoryDto>(blogsWithBlogCategoryDto.Count(), ObjectMapper.Map<List<GetAllBlogsWithBlogCategoryDto>>(blogsWithBlogCategoryDto));
             return result;
 
+        }
+
+        public AlertDto CreateAlert(AlertDto input)
+        {
+            var dto = ObjectMapper.Map<AlertInfo>(input);
+            dto.TenantId = AbpSession.TenantId.Value;
+            alert_repo.Insert(dto);
+            CurrentUnitOfWork.SaveChanges();
+            return ObjectMapper.Map<AlertDto>(dto);
+        }
+
+        public PagedResultDto<AlertDto> GetAllAlerts(PagedResultRequestDto input)
+        {
+            var query = alert_repo.GetAll().Where(x => x.TenantId == AbpSession.TenantId);
+            var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
+            return result;
+        }
+
+        public PagedResultDto<AlertDto> GetAlertsByUniqueKey(PagedResultRequestDto input, string UniqueKey)
+        {
+            var query = alert_repo.GetAll().Where(x => x.UniqueKey == UniqueKey && x.TenantId == AbpSession.TenantId);
+            var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
+            return result;
         }
     }
 }
