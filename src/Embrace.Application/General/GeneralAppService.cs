@@ -16,6 +16,7 @@ using Embrace.Entities.BlogCategory.Dto;
 using Embrace.Entities.OrderPlacement.Dto;
 using Embrace.General.Dto;
 using Embrace.Quartz;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Quartz;
 using Quartz.Impl;
 
@@ -36,24 +37,26 @@ namespace Embrace.General
         private readonly IRepository<SubCategoryAndDateInfo, long> _subCategoryAndDateRepository;
         private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
         private readonly IRepository<CategoryInfo, long> _categoriesRepository;
-       
+
         private readonly IRepository<ProductCategoryInfo, long> _productCategoryRepository;
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
-       private readonly IRepository<BlogInfo, long> _blogRepository;
+        private readonly IRepository<BlogInfo, long> _blogRepository;
         private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
+        private readonly IRepository<UserBlogInfo, long> _userBlogRepository;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
         IRepository<User, long> repository,
         UserManager userManager,
         IRepository<SubscriptionInfo, long> subscriptionRepository,
+        IRepository<UserBlogInfo, long> userBlogRepository,
         IRepository<SubscriptionOrderPayementAllocationInfo, long> subscriptionOrderPayementRepository,
         IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
-       IRepository<OrderPlacementInfo, long> orderPlacementRepository,
-      
+        IRepository<OrderPlacementInfo, long> orderPlacementRepository,
+
         IRepository<ProductImageAllocationInfo, long> productImageAllocationRepository,
         IRepository<ProductCategoryInfo, long> productCategoryRepository,
-       
+
         IRepository<UniqueNameAndDateInfo, long> uniqueNameAndDateInfoRepository,
         IRepository<SubCategoryAndDateInfo, long> subCategoryAndDateRepository,
         IRepository<MenstruationDetailsInfo, long> menstruationDetailsRepository,
@@ -66,12 +69,13 @@ namespace Embrace.General
 
           ) : base()
         {
-             _subscriptionRepository = subscriptionRepository;
+            _userBlogRepository = userBlogRepository;
+            _subscriptionRepository = subscriptionRepository;
             _subscriptionOrderPayementRepository = subscriptionOrderPayementRepository;
             _subscriptionTypeRepository = subscriptionTypeRepository;
             _productCategoryRepository = productCategoryRepository;
             _productImageAllocationRepository = productImageAllocationRepository;
-             _userManager = userManager;
+            _userManager = userManager;
             _subCategoryAndDateRepository = subCategoryAndDateRepository;
             _subCategoryImageAllocationRepository = subCategoryImageAllocationRepository;
             _menstruationDetailsRepository = menstruationDetailsRepository;
@@ -129,8 +133,8 @@ namespace Embrace.General
             UniqueNameAndDateInfo result = new UniqueNameAndDateInfo();
             var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).OrderByDescending(x => x.Id).FirstOrDefault();
 
-           if (dataUniqueKey.StartDatePeriod.Date.Month == input.DateAndTime.Date.Month)
-           {
+            if (dataUniqueKey.StartDatePeriod.Date.Month == input.DateAndTime.Date.Month)
+            {
                 result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
                 result.Name = dataUniqueKey.Name;
                 result.StartDatePeriod = input.DateAndTime;
@@ -197,7 +201,7 @@ namespace Embrace.General
                 CurrentUnitOfWork.SaveChanges();
 
             }
-          
+
             var data = ObjectMapper.Map<UniqueNameAndDateUniqueKeyDto>(result);
             return data;
 
@@ -224,7 +228,7 @@ namespace Embrace.General
                 };
                 getAllOrderPlacementbyIdDto1.Add(getAllOrderPlacementbyIdDto);
             }
-           
+
             return getAllOrderPlacementbyIdDto1;
         }
         public async Task<string> CreateSubscription(CreateSubscriptionDto input, int tenant)
@@ -577,9 +581,9 @@ namespace Embrace.General
                 throw new UserFriendlyException("Invalid Unique Key");
             }
 
-            GetAllMenstruationDetails menstruation =new GetAllMenstruationDetails();
+            GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
             menstruation = GetAllMenstruation(uniquekey.StartDatePeriod);
-            
+
 
             var result = new MenstruationDetailsInfo();
             result.TenantId = input.TenantId;
@@ -669,9 +673,9 @@ namespace Embrace.General
             return getAllMenstruationDetails;
         }
 
-        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate )
+        public GetAllMenstruationDetails GetAllMenstruationDetailsbyDate(DateTime currentMensDate)
         {
-            var totalDays = currentMensDate.AddDays(28); 
+            var totalDays = currentMensDate.AddDays(28);
             var ovulation_day = (totalDays.AddDays(11));
             var last_mens_start = (totalDays.AddDays(-28));
             var last_mens_end = (totalDays.AddDays(-24));
@@ -679,7 +683,7 @@ namespace Embrace.General
             var next_mens_end = (totalDays.AddDays(3));
             var ovulation_window_start = (ovulation_day.AddDays(-2));
             var ovulation_window_end = (ovulation_day.AddDays(2));
-           
+
 
 
             GetAllMenstruationDetails getAllMenstruationDetails = new GetAllMenstruationDetails
@@ -697,7 +701,7 @@ namespace Embrace.General
             };
             return getAllMenstruationDetails;
         }
-       public List<GetAllMenstruationDetails> GetAllMenstruationDetailsbyUniqueKey(string uniquekey, int tenantId)
+        public List<GetAllMenstruationDetails> GetAllMenstruationDetailsbyUniqueKey(string uniquekey, int tenantId)
         {
             List<GetAllMenstruationDetails> menstruationDetails = new List<GetAllMenstruationDetails>();
             var menstruationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == uniquekey && x.TenantId == tenantId).OrderByDescending(x => x.Id).FirstOrDefault();
@@ -829,7 +833,7 @@ namespace Embrace.General
                     Next_Mens_End = item.Next_Mens_End,
                     Ovulation_Window_Start = item.Ovulation_Window_Start,
                     Ovulation_Window_End = item.Ovulation_Window_End,
-                  
+
                 };
                 menstruationDetails.Add(getAllMenstruationDetails);
             }
@@ -857,14 +861,14 @@ namespace Embrace.General
             var result = new PagedResultDto<GetAllSubCategoryDto>(query.Count(), ObjectMapper.Map<List<GetAllSubCategoryDto>>(query));
             return result;
         }
-    
-        public PagedResultDto<GetAllBlogDto> GetAllBlogsbyCategoryName( string categoryName, int tenantId)
+
+        public PagedResultDto<GetAllBlogDto> GetAllBlogsbyCategoryName(string categoryName, int tenantId)
         {
-            var category = _categoryRepository.GetAll().Where(x => x.Name.Contains(categoryName) && x.TenantId == tenantId).FirstOrDefault();
+            var category = _blogCategoryRepository.GetAll().Where(x => x.Name.Contains(categoryName) && x.TenantId == tenantId).FirstOrDefault();
             if (category != null)
             {
                 var query = from sb in _blogRepository.GetAll().Where(x => x.IsActive == true && x.CategoryId == category.Id && x.TenantId == tenantId)
-                            join ca in _categoryRepository.GetAll() on sb.CategoryId equals ca.Id
+                            join ca in _blogCategoryRepository.GetAll() on sb.CategoryId equals ca.Id
                             select new GetAllBlogDto()
                             {
                                 Id = sb.Id,
@@ -877,13 +881,13 @@ namespace Embrace.General
                 var result = new PagedResultDto<GetAllBlogDto>(query.Count(), ObjectMapper.Map<List<GetAllBlogDto>>(query));
                 return result;
             }
-          
+
             return new PagedResultDto<GetAllBlogDto>();
         }
         public PagedResultDto<GetAllSubCategoryAndDateDto> GetAllSubCategoryAndDate(PagedResultRequestDto input, int tenantId)
         {
 
-            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true  && x.TenantId == tenantId)
+            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == tenantId)
                         join ca in _subCategoryRepository.GetAll() on sb.SubCategoryId equals ca.Id
                         select new GetAllSubCategoryAndDateDto()
                         {
@@ -951,7 +955,7 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllSubCategoryDataDto> GetAllSubCategoryWithUniquekey(PagedResultRequestDto input, int tenantId, string uniqueKey)
         {
-            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.UniqueKey == uniqueKey  && x.TenantId == tenantId)
+            var query = from sb in _subCategoryAndDateRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenantId)
                         join sub in _subCategoryRepository.GetAll() on sb.SubCategoryId equals sub.Id
                         join ca in _categoryRepository.GetAll() on sub.CategoryId equals ca.Id
                         select new GetAllSubCategoryDataDto()
@@ -973,8 +977,8 @@ namespace Embrace.General
         {
             categoryName = categoryName != null ? categoryName : string.Empty;
             List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
- 
-            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true 
+
+            var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true
             && x.Name == categoryName).FirstOrDefault();
             if (productCategoryData == null)
             {
@@ -987,7 +991,7 @@ namespace Embrace.General
             }
             foreach (var productparametersItem in productparameters)
             {
-               
+
 
                 GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
                 {
@@ -999,7 +1003,7 @@ namespace Embrace.General
                     Price = productparametersItem.Price,
                     ProductCategoryId = productCategoryData.Id,
                     ProductCategoryName = productCategoryData.Name,
-                    
+
                 };
                 productParametersDtos.Add(getAllProduct);
 
@@ -1018,17 +1022,17 @@ namespace Embrace.General
         }
         public PagedResultDto<GetAllProductParametersDto> GetAllProductParameters(PagedResultRequestDto input)
         {
-           List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
+            List<GetAllProductParametersDto> productParametersDtos = new List<GetAllProductParametersDto>();
 
-          
+
             var productparameters = _productParametersRepository.GetAll().ToList();
-        
+
             foreach (var product in productparameters)
             {
-              
 
-                var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true ).FirstOrDefault();
-       
+
+                var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.Id == product.ProductCategoryId && x.IsActive == true).FirstOrDefault();
+
                 GetAllProductParametersDto getAllProduct = new GetAllProductParametersDto()
                 {
 
@@ -1057,12 +1061,12 @@ namespace Embrace.General
             List<GetAllProductParametersDetailsDto> productParametersDtos = new List<GetAllProductParametersDetailsDto>();
             List<GetAllProductImageDto> getAllProductImageDtos = new List<GetAllProductImageDto>();
             //cache
-           productimage = _productImageAllocationRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
-            
+            productimage = _productImageAllocationRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+
             var products = _productParametersRepository.GetAll().Where(x => x.Id == productId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
             var productCategoryData = _productCategoryRepository.GetAll().Where(x => x.IsActive == true && x.TenantId == AbpSession.TenantId && x.Id == products.ProductCategoryId).FirstOrDefault();
-           var allocatedImages = _productImageAllocationRepository.GetAll().Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).ToList();
-           foreach (var item in allocatedImages)
+            var allocatedImages = _productImageAllocationRepository.GetAll().Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).ToList();
+            foreach (var item in allocatedImages)
             {
                 var getimages = productimage.Where(x => x.ProductParameterId == productId && x.TenantId == AbpSession.TenantId).FirstOrDefault();
                 GetAllProductImageDto getAllimages = new GetAllProductImageDto()
@@ -1074,8 +1078,8 @@ namespace Embrace.General
                 };
                 getAllProductImageDtos.Add(getAllimages);
             }
-            
-         
+
+
 
             GetAllProductParametersDetailsDto getAllProduct = new GetAllProductParametersDetailsDto()
             {
@@ -1085,8 +1089,8 @@ namespace Embrace.General
                 ProductImage = products.ProductImage,
                 Description = products.Description,
                 ProductCategoryId = productCategoryData.Id,
-                ProductCategoryName = productCategoryData.Name,             
-                Images = getAllProductImageDtos, 
+                ProductCategoryName = productCategoryData.Name,
+                Images = getAllProductImageDtos,
                 Price = products.Price,
             };
             productParametersDtos.Add(getAllProduct);
@@ -1245,6 +1249,69 @@ namespace Embrace.General
             }
 
             var result = new PagedResultDto<GetAllBlogsWithBlogCategoryDto>(blogsWithBlogCategoryDto.Count(), ObjectMapper.Map<List<GetAllBlogsWithBlogCategoryDto>>(blogsWithBlogCategoryDto));
+            return result;
+
+        }
+        public async Task<UpateblogDto> CreateUserBlogs(UpateblogDto input)
+        {
+            UserBlogInfo data = new UserBlogInfo();
+            var prevdataBlog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            if (prevdataBlog == null)
+            {
+                data = ObjectMapper.Map<UserBlogInfo>(input);
+                data.LastModificationTime = DateTime.Now;
+                data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+                await _userBlogRepository.InsertAsync(data);
+                CurrentUnitOfWork.SaveChanges();
+            }
+            else
+            {
+                data = ObjectMapper.Map<UserBlogInfo>(prevdataBlog);
+                data.UniqueKey = input.UniqueKey;
+                data.IsSavedBlog = input.IsSavedPost;
+                data.TenantId = input.TenantId;
+                data.LastModificationTime = DateTime.Now;
+                data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
+
+                await _userBlogRepository.UpdateAsync(data);
+                CurrentUnitOfWork.SaveChanges();
+            }
+
+
+            var result = ObjectMapper.Map<UpateblogDto>(data);
+            return result;
+
+        }
+        public PagedResultDto<GetAllGeneralBlogDto> GetAllBlogsWithUniqueKey(PagedResultRequestDto input, string uniqueKey, int tenant)
+        {
+            List<BlogInfo> blogs = new List<BlogInfo>();
+            List<GetAllGeneralBlogDto> blogList = new List<GetAllGeneralBlogDto>();
+            blogs = _blogRepository.GetAll().ToList();
+
+            var userblog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == uniqueKey && x.TenantId == tenant).ToList();
+
+            foreach (var blogItem in userblog)
+            {
+                var blogsData = blogs.Where(x => x.Id == blogItem.BlogId && x.TenantId == tenant).FirstOrDefault();
+              
+                GetAllGeneralBlogDto getAllBlogs = new GetAllGeneralBlogDto()
+                {
+                    Id = blogsData.Id,
+                    Title = blogsData.Title,
+                    Description = blogsData.Description,
+                    CategoryId = blogsData.CategoryId,
+                    ImageUrl = blogsData.ImageUrl,
+                    IsSavedPost = blogItem.IsSavedBlog,
+                    UniqueKey = blogItem.UniqueKey,
+                };
+                if (blogItem.IsSavedBlog == true)
+                {
+                    blogList.Add(getAllBlogs);
+                }
+           
+            }
+
+            var result = new PagedResultDto<GetAllGeneralBlogDto>(blogList.Count(), ObjectMapper.Map<List<GetAllGeneralBlogDto>>(blogList));
             return result;
 
         }

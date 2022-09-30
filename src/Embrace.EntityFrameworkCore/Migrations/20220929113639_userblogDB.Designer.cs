@@ -4,14 +4,16 @@ using Embrace.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Embrace.Migrations
 {
     [DbContext(typeof(EmbraceDbContext))]
-    partial class EmbraceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220929113639_userblogDB")]
+    partial class userblogDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
