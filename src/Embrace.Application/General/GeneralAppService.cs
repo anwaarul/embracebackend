@@ -9,6 +9,7 @@ using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Embrace.Authorization.Users;
+using Embrace.Entites.Alert.Dto;
 using Embrace.Entites.SubCategory.Dto;
 using Embrace.Entities;
 using Embrace.Entities.Blog.Dto;
@@ -42,7 +43,7 @@ namespace Embrace.General
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
         private readonly IRepository<BlogInfo, long> _blogRepository;
         private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
-        private readonly IRepository<UserBlogInfo, long> _userBlogRepository;
+        private readonly IRepository<AlertInfo, long> alert_repo;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -52,7 +53,7 @@ namespace Embrace.General
         IRepository<UserBlogInfo, long> userBlogRepository,
         IRepository<SubscriptionOrderPayementAllocationInfo, long> subscriptionOrderPayementRepository,
         IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
-        IRepository<OrderPlacementInfo, long> orderPlacementRepository,
+       IRepository<OrderPlacementInfo, long> orderPlacementRepository,
 
         IRepository<ProductImageAllocationInfo, long> productImageAllocationRepository,
         IRepository<ProductCategoryInfo, long> productCategoryRepository,
@@ -65,11 +66,10 @@ namespace Embrace.General
         IRepository<CategoryInfo, long> categoryRepository,
         IRepository<ProductParametersInfo, long> productParametersRepository,
         IRepository<BlogInfo, long> blogRepository,
-        IRepository<BlogCategoryInfo, long> blogCategoryRepository
-
+        IRepository<BlogCategoryInfo, long> blogCategoryRepository,
+        IRepository<AlertInfo, long> alert_repo
           ) : base()
         {
-            _userBlogRepository = userBlogRepository;
             _subscriptionRepository = subscriptionRepository;
             _subscriptionOrderPayementRepository = subscriptionOrderPayementRepository;
             _subscriptionTypeRepository = subscriptionTypeRepository;
@@ -86,7 +86,7 @@ namespace Embrace.General
             _productParametersRepository = productParametersRepository;
             _blogRepository = blogRepository;
             _blogCategoryRepository = blogCategoryRepository;
-
+            this.alert_repo = alert_repo;
         }
 
         public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueKeyWithNameAndDateTime(UniqueNameAndDateDto input)
@@ -1101,7 +1101,9 @@ namespace Embrace.General
 
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<string> SendMail(string text)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             try
             {

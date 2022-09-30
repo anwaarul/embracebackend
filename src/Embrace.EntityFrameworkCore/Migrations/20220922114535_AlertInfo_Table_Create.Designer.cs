@@ -4,14 +4,16 @@ using Embrace.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Embrace.Migrations
 {
     [DbContext(typeof(EmbraceDbContext))]
-    partial class EmbraceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220922114535_AlertInfo_Table_Create")]
+    partial class AlertInfo_Table_Create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1571,9 +1573,6 @@ namespace Embrace.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("AlertInfo");
@@ -2273,9 +2272,6 @@ namespace Embrace.Migrations
                     b.Property<long>("OrderPaymentId")
                         .HasColumnType("bigint");
 
-                    b.Property<double>("Quantity")
-                        .HasColumnType("float");
-
                     b.Property<long>("SubscriptionId")
                         .HasColumnType("bigint");
 
@@ -2381,54 +2377,6 @@ namespace Embrace.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UniqueNameAndDateInfo");
-                });
-
-            modelBuilder.Entity("Embrace.Entities.UserBlogInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long>("BlogId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSavedBlog")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserBlogInfo");
                 });
 
             modelBuilder.Entity("Embrace.Entities.UserProductAllocationInfo", b =>

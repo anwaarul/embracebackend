@@ -135,7 +135,7 @@
         public const string LookUps_ProductImageAllocation_Create = "LookUps.ProductImageAllocation.Create";
         public const string LookUps_ProductImageAllocation_Update = "LookUps.ProductImageAllocation.Update";
         public const string LookUps_ProductImageAllocation_Delete = "LookUps.ProductImageAllocation.Delete";
-        
+
         // ProductCategory API Permission
         public const string LookUps_ProductCategory = "LookUps.ProductCategory";
         public const string LookUps_ProductCategory_Page = "LookUps.ProductCategory.Pages";
@@ -163,9 +163,7 @@
         public const string LookUps_BlogBlogCategoryAllocation_Create = "LookUps.BlogBlogCategoryAllocation.Create";
         public const string LookUps_BlogBlogCategoryAllocation_Update = "LookUps.BlogBlogCategoryAllocation.Update";
         public const string LookUps_BlogBlogCategoryAllocation_Delete = "LookUps.BlogBlogCategoryAllocation.Delete";
-
-        
     }
 
-   
+
 }

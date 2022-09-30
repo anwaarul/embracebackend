@@ -33,7 +33,7 @@ namespace Rabat.Entites.Category
         {
 
             _subCategoryImageAllocationRepository = subCategoryImageAllocationRepository;
-           
+
             _subCategoryInfoRepository = subCategoryInfoRepository;
             _categoryRepository = _repository;
             _permissionManager = _Manager;
@@ -92,7 +92,7 @@ namespace Rabat.Entites.Category
         //            };
         //            await _subCategoryInfoRepository.InsertAsync(subCategory1);
         //            CurrentUnitOfWork.SaveChanges();
-                   
+
         //            foreach (var imageBase in input.BulkImage)
         //            {
         //                if (imageBase.ImageUrl != null)
@@ -119,7 +119,7 @@ namespace Rabat.Entites.Category
         //                    }
         //                    else
         //                    {
-                               
+
         //                        imgUrl = SaveImage(imageBase.ImageUrl);
 
 
@@ -141,7 +141,7 @@ namespace Rabat.Entites.Category
 
         //                }
         //            }
-              
+
         //        }
 
         //    }
@@ -234,7 +234,7 @@ namespace Rabat.Entites.Category
             var result = new PagedResultDto<CategoryDto>(query.Count(), ObjectMapper.Map<List<CategoryDto>>(statelist));
             return Task.FromResult(result);
         }
-       
+
         public async Task<String> CreateCategoryBulk(CreateCategoryBulkDto CategoryDto)
         {
             int index = 0;
