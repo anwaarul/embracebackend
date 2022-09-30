@@ -38,12 +38,13 @@ namespace Embrace.General
         private readonly IRepository<SubCategoryAndDateInfo, long> _subCategoryAndDateRepository;
         private readonly IRepository<ProductParametersInfo, long> _productParametersRepository;
         private readonly IRepository<CategoryInfo, long> _categoriesRepository;
+        private readonly IRepository<UserBlogInfo, long> _userBlogRepository;
 
         private readonly IRepository<ProductCategoryInfo, long> _productCategoryRepository;
         private readonly IRepository<ProductImageAllocationInfo, long> _productImageAllocationRepository;
         private readonly IRepository<BlogInfo, long> _blogRepository;
         private readonly IRepository<BlogCategoryInfo, long> _blogCategoryRepository;
-        private readonly IRepository<AlertInfo, long> alert_repo;
+        //private readonly IRepository<AlertInfo, long> alert_repo;
         private readonly UserManager _userManager;
 
         public GeneralAppService(
@@ -53,8 +54,7 @@ namespace Embrace.General
         IRepository<UserBlogInfo, long> userBlogRepository,
         IRepository<SubscriptionOrderPayementAllocationInfo, long> subscriptionOrderPayementRepository,
         IRepository<SubscriptionTypeInfo, long> subscriptionTypeRepository,
-       IRepository<OrderPlacementInfo, long> orderPlacementRepository,
-
+        IRepository<OrderPlacementInfo, long> orderPlacementRepository,
         IRepository<ProductImageAllocationInfo, long> productImageAllocationRepository,
         IRepository<ProductCategoryInfo, long> productCategoryRepository,
 
@@ -66,10 +66,11 @@ namespace Embrace.General
         IRepository<CategoryInfo, long> categoryRepository,
         IRepository<ProductParametersInfo, long> productParametersRepository,
         IRepository<BlogInfo, long> blogRepository,
-        IRepository<BlogCategoryInfo, long> blogCategoryRepository,
-        IRepository<AlertInfo, long> alert_repo
+        IRepository<BlogCategoryInfo, long> blogCategoryRepository
+        //IRepository<AlertInfo, long> alert_repo
           ) : base()
         {
+            _userBlogRepository = userBlogRepository;
             _subscriptionRepository = subscriptionRepository;
             _subscriptionOrderPayementRepository = subscriptionOrderPayementRepository;
             _subscriptionTypeRepository = subscriptionTypeRepository;
@@ -86,7 +87,7 @@ namespace Embrace.General
             _productParametersRepository = productParametersRepository;
             _blogRepository = blogRepository;
             _blogCategoryRepository = blogCategoryRepository;
-            this.alert_repo = alert_repo;
+            //this.alert_repo = alert_repo;
         }
 
         public async Task<UniqueNameAndDateUniqueKeyDto> CreateUniqueKeyWithNameAndDateTime(UniqueNameAndDateDto input)
@@ -1257,10 +1258,11 @@ namespace Embrace.General
         public async Task<UpateblogDto> CreateUserBlogs(UpateblogDto input)
         {
             UserBlogInfo data = new UserBlogInfo();
-            var prevdataBlog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == AbpSession.TenantId).FirstOrDefault();
+            var prevdataBlog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
             if (prevdataBlog == null)
             {
                 data = ObjectMapper.Map<UserBlogInfo>(input);
+                data.IsSavedBlog = input.IsSavedPost;
                 data.LastModificationTime = DateTime.Now;
                 data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
                 await _userBlogRepository.InsertAsync(data);
@@ -1295,7 +1297,7 @@ namespace Embrace.General
             foreach (var blogItem in userblog)
             {
                 var blogsData = blogs.Where(x => x.Id == blogItem.BlogId && x.TenantId == tenant).FirstOrDefault();
-              
+
                 GetAllGeneralBlogDto getAllBlogs = new GetAllGeneralBlogDto()
                 {
                     Id = blogsData.Id,
@@ -1310,7 +1312,7 @@ namespace Embrace.General
                 {
                     blogList.Add(getAllBlogs);
                 }
-           
+
             }
 
             var result = new PagedResultDto<GetAllGeneralBlogDto>(blogList.Count(), ObjectMapper.Map<List<GetAllGeneralBlogDto>>(blogList));
