@@ -16,6 +16,7 @@ using Embrace.Entities.Blog.Dto;
 using Embrace.Entities.BlogCategory.Dto;
 using Embrace.Entities.OrderPlacement.Dto;
 using Embrace.General.Dto;
+using Embrace.MultiTenancy;
 using Embrace.Quartz;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Quartz;
@@ -108,7 +109,6 @@ namespace Embrace.General
 
                 result.DateAndTime = dataUniqueKey.DateAndTime;
                 result.StartDatePeriod = dataUniqueKey.StartDatePeriod;
-                result.EndDatePeriod = dataUniqueKey.EndDatePeriod;
                 result.UniqueKey = dataUniqueKey.UniqueKey;
 
             }
@@ -133,8 +133,9 @@ namespace Embrace.General
             GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
             UniqueNameAndDateInfo result = new UniqueNameAndDateInfo();
             var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).OrderByDescending(x => x.Id).FirstOrDefault();
-
-            if (dataUniqueKey.StartDatePeriod.Date.Month == input.DateAndTime.Date.Month)
+            var addtwentyoneday = dataUniqueKey.StartDatePeriod.AddDays(20);
+            var addfourtyday = dataUniqueKey.StartDatePeriod.AddDays(39);
+            if (input.DateAndTime.Date < addtwentyoneday.Date)
             {
                 result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
                 result.Name = dataUniqueKey.Name;
@@ -143,44 +144,9 @@ namespace Embrace.General
                 result.UniqueKey = dataUniqueKey.UniqueKey;
                 result.DateAndTime = dataUniqueKey.DateAndTime;
                 await _uniqueNameAndDateInfoRepository.UpdateAsync(result);
-
                 result.IsActive = true;
 
-                CurrentUnitOfWork.SaveChanges();
-                menstruation = GetAllMenstruation(result.StartDatePeriod);
-                var menstrationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
-                var menstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstrationdata);
-                menstration.TenantId = input.TenantId;
-                menstration.UniqueKey = result.UniqueKey;
-                menstration.MyCycle = menstruation.MyCycle;
-                menstration.Ovulation_date = menstruation.Ovulation_date;
-                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
-                menstration.Last_Mens_End = menstruation.Last_Mens_End;
-                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
-                menstration.Next_Mens_End = menstruation.Next_Mens_End;
-                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
-                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-
-
-                await _menstruationDetailsRepository.UpdateAsync(menstration);
-
-                menstration.IsActive = true;
-
-                CurrentUnitOfWork.SaveChanges();
-            }
-            else
-            {
-                result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
-                result.Name = dataUniqueKey.Name;
-                result.StartDatePeriod = input.DateAndTime;
-                result.TenantId = input.TenantId;
-                result.UniqueKey = dataUniqueKey.UniqueKey;
-                result.DateAndTime = dataUniqueKey.DateAndTime;
-                await _uniqueNameAndDateInfoRepository.InsertAsync(result);
-
-                result.IsActive = true;
-
-                CurrentUnitOfWork.SaveChanges();
+                var menstruationDetails = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey).ToList();
                 menstruation = GetAllMenstruation(result.StartDatePeriod);
                 var menstration = new MenstruationDetailsInfo();
                 menstration.TenantId = input.TenantId;
@@ -193,16 +159,97 @@ namespace Embrace.General
                 menstration.Next_Mens_End = menstruation.Next_Mens_End;
                 menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
                 menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-
-
+                menstration.Status = "Normal";
                 await _menstruationDetailsRepository.InsertAsync(menstration);
+                menstration.IsActive = true;
+                
+                menstruationDetails.TakeWhile(x => x.UniqueKey != result.UniqueKey).LastOrDefault();
+                var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstruationDetails);
+                menstration.Status = "Abnormal";
+                
+                await _menstruationDetailsRepository.UpdateAsync(menstration);
+
+                menstration.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
+            }
+            if(input.DateAndTime.Date > addfourtyday.Date)
+            {
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
+                result.Name = dataUniqueKey.Name;
+                result.StartDatePeriod = input.DateAndTime;
+                result.TenantId = input.TenantId;
+                result.UniqueKey = dataUniqueKey.UniqueKey;
+                result.DateAndTime = dataUniqueKey.DateAndTime;
+                await _uniqueNameAndDateInfoRepository.UpdateAsync(result);
+                result.IsActive = true;
+
+                var menstruationDetails = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey).ToList();
+                menstruation = GetAllMenstruation(result.StartDatePeriod);
+                var menstration = new MenstruationDetailsInfo();
+                menstration.TenantId = input.TenantId;
+                menstration.UniqueKey = result.UniqueKey;
+                menstration.MyCycle = menstruation.MyCycle;
+                menstration.Ovulation_date = menstruation.Ovulation_date;
+                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
+                menstration.Last_Mens_End = menstruation.Last_Mens_End;
+                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
+                menstration.Next_Mens_End = menstruation.Next_Mens_End;
+                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+                menstration.Status = "Normal";
+                await _menstruationDetailsRepository.InsertAsync(menstration);
+                menstration.IsActive = true;
+
+                menstruationDetails.TakeWhile(x => x.UniqueKey != result.UniqueKey).LastOrDefault();
+                var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstruationDetails);
+                menstration.Status = "Abnormal";
+
+                await _menstruationDetailsRepository.UpdateAsync(menstration);
 
                 menstration.IsActive = true;
 
                 CurrentUnitOfWork.SaveChanges();
 
             }
+            if (input.DateAndTime.Date <= addfourtyday.Date && dataUniqueKey.DateAndTime.Date >= addtwentyoneday.Date)
+            {
+                result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
+                result.Name = dataUniqueKey.Name;
+                result.StartDatePeriod = input.DateAndTime;
+                result.TenantId = input.TenantId;
+                result.UniqueKey = dataUniqueKey.UniqueKey;
+                result.DateAndTime = dataUniqueKey.DateAndTime;
+                await _uniqueNameAndDateInfoRepository.UpdateAsync(result);
+                result.IsActive = true;
 
+                var menstruationDetails = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey).ToList();
+                menstruation = GetAllMenstruation(result.StartDatePeriod);
+                var menstration = new MenstruationDetailsInfo();
+                menstration.TenantId = input.TenantId;
+                menstration.UniqueKey = result.UniqueKey;
+                menstration.MyCycle = menstruation.MyCycle;
+                menstration.Ovulation_date = menstruation.Ovulation_date;
+                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
+                menstration.Last_Mens_End = menstruation.Last_Mens_End;
+                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
+                menstration.Next_Mens_End = menstruation.Next_Mens_End;
+                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
+                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
+                menstration.Status = "Normal";
+                await _menstruationDetailsRepository.InsertAsync(menstration);
+                menstration.IsActive = true;
+
+                menstruationDetails.TakeWhile(x => x.UniqueKey != result.UniqueKey).LastOrDefault();
+                var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstruationDetails);
+                menstration.Status = "Normal";
+
+                await _menstruationDetailsRepository.UpdateAsync(menstration);
+
+                menstration.IsActive = true;
+
+                CurrentUnitOfWork.SaveChanges();
+            }
             var data = ObjectMapper.Map<UniqueNameAndDateUniqueKeyDto>(result);
             return data;
 
@@ -1102,10 +1149,8 @@ namespace Embrace.General
 
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<string> SendMail(string text)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
+      public async Task<string> SendMail(string text)
+      {
             try
             {
 
@@ -1212,7 +1257,7 @@ namespace Embrace.General
             var result = new PagedResultDto<BlogCategoryDto>(statelist.Count(), ObjectMapper.Map<List<BlogCategoryDto>>(statelist));
             return result;
         }
-        public PagedResultDto<GetAllBlogsWithBlogCategoryDto> GetAllBlogsWithBlogCategory(PagedResultRequestDto input)
+        public PagedResultDto<GetAllBlogsWithBlogCategoryDto> GetAllBlogsWithBlogCategory(PagedResultRequestDto input , string uniqueKey)
         {
             List<BlogCategoryInfo> blogCategories = new List<BlogCategoryInfo>();
             List<BlogInfo> blogs = new List<BlogInfo>();
@@ -1221,22 +1266,25 @@ namespace Embrace.General
 
             blogCategories = _blogCategoryRepository.GetAll().ToList();
             blogs = _blogRepository.GetAll().ToList();
-
-
+           
             foreach (var blogCategoriesItem in blogCategories)
             {
                 List<GetAllGeneralBlogDto> blogList = new List<GetAllGeneralBlogDto>();
-
+                   
                 var blogsData = blogs.Where(x => x.CategoryId == blogCategoriesItem.Id).ToList();
                 foreach (var blogsDataItem in blogsData)
                 {
+                    var userblog = _userBlogRepository.GetAll().Where(x => x.BlogId == blogsDataItem.Id && x.UniqueKey == uniqueKey).FirstOrDefault();
+
                     GetAllGeneralBlogDto getAllBlogs = new GetAllGeneralBlogDto()
                     {
                         Id = blogsDataItem.Id,
                         Title = blogsDataItem.Title,
                         Description = blogsDataItem.Description,
                         CategoryId = blogsDataItem.CategoryId,
-                        ImageUrl = blogsDataItem.ImageUrl
+                        ImageUrl = blogsDataItem.ImageUrl,
+                        IsSavedPost = userblog != null ? userblog.IsSavedBlog : false,
+                        UniqueKey = uniqueKey,
                     };
                     blogList.Add(getAllBlogs);
                 }
@@ -1258,7 +1306,7 @@ namespace Embrace.General
         public async Task<UpateblogDto> CreateUserBlogs(UpateblogDto input)
         {
             UserBlogInfo data = new UserBlogInfo();
-            var prevdataBlog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
+            var prevdataBlog = _userBlogRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.BlogId == input.BlogId && x.TenantId == input.TenantId).FirstOrDefault();
             if (prevdataBlog == null)
             {
                 data = ObjectMapper.Map<UserBlogInfo>(input);
@@ -1273,6 +1321,7 @@ namespace Embrace.General
                 data = ObjectMapper.Map<UserBlogInfo>(prevdataBlog);
                 data.UniqueKey = input.UniqueKey;
                 data.IsSavedBlog = input.IsSavedPost;
+                data.BlogId = input.BlogId;
                 data.TenantId = input.TenantId;
                 data.LastModificationTime = DateTime.Now;
                 data.LastModifierUserId = Convert.ToInt32(AbpSession.UserId);
