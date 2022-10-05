@@ -1,4 +1,5 @@
 ﻿using Abp.AutoMapper;
+using Abp.Domain.Entities;
 using Embrace.Entities;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Embrace.General.Dto
 {
   
-    public class GetAllMenstruationDetails 
+    public class GetAllMenstruation : Entity<long>
     {
         public string UniqueKey { get; set; }
         public DateTime MyCycle { get; set; }
