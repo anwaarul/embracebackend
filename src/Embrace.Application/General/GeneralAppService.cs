@@ -1337,9 +1337,20 @@ namespace Embrace.General
                 await _userBlogRepository.UpdateAsync(data);
                 CurrentUnitOfWork.SaveChanges();
             }
+        public AlertDto CreateAlert(AlertDto input, int TenantId)
+        {
+            var dto = ObjectMapper.Map<AlertInfo>(input);
+            dto.TenantId = TenantId;
+            alert_repo.Insert(dto);
+            CurrentUnitOfWork.SaveChanges();
+            return ObjectMapper.Map<AlertDto>(dto);
+        }
 
-
-            var result = ObjectMapper.Map<UpateblogDto>(data);
+        public PagedResultDto<AlertDto> GetAllAlerts(PagedResultRequestDto input)
+        {
+            var query = alert_repo.GetAll().Where(x => x.TenantId == AbpSession.TenantId);
+            var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
             return result;
 
         }
@@ -1355,24 +1366,11 @@ namespace Embrace.General
             {
                 var blogsData = blogs.Where(x => x.Id == blogItem.BlogId && x.TenantId == tenant).FirstOrDefault();
 
-                GetAllGeneralBlogDto getAllBlogs = new GetAllGeneralBlogDto()
-                {
-                    Id = blogsData.Id,
-                    Title = blogsData.Title,
-                    Description = blogsData.Description,
-                    CategoryId = blogsData.CategoryId,
-                    ImageUrl = blogsData.ImageUrl,
-                    IsSavedPost = blogItem.IsSavedBlog,
-                    UniqueKey = blogItem.UniqueKey,
-                };
-                if (blogItem.IsSavedBlog == true)
-                {
-                    blogList.Add(getAllBlogs);
-                }
-
-            }
-
-            var result = new PagedResultDto<GetAllGeneralBlogDto>(blogList.Count(), ObjectMapper.Map<List<GetAllGeneralBlogDto>>(blogList));
+        public PagedResultDto<AlertDto> GetAlertsByUniqueKey(PagedResultRequestDto input, string UniqueKey)
+        {
+            var query = alert_repo.GetAll().Where(x => x.UniqueKey == UniqueKey && x.TenantId == AbpSession.TenantId);
+            var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
             return result;
 
         }
