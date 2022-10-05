@@ -14,7 +14,5 @@ namespace Embrace.General.Dto
         public string Description { get; set; }
         public long CategoryId { get; set; }
         public string ImageUrl { get; set; }
-        public string UniqueKey { get; set; }
-        public bool IsSavedPost { get; set; }
     }
 }

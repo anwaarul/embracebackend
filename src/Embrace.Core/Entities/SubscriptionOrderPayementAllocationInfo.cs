@@ -10,6 +10,5 @@ namespace Embrace.Entities
     {
         public long OrderPaymentId { get; set; }
         public long SubscriptionId { get; set; }
-        public double Quantity { get; set; }
     }
 }

@@ -16,6 +16,5 @@ namespace Embrace.Entities.Blog.Dto
         public long CategoryId { get; set; }
         public string CategoryName { get; set; }
         public string ImageUrl { get; set; }
-
     }
 }

@@ -84,7 +84,6 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
                     {
 
                         SubscriptionId = input.SubscriptionId,
-                        Quantity = input.Quantity,
                         OrderPaymentId = OrderPlacement
                     };
 
@@ -168,8 +167,7 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation
                             UniqueKey = s.UniqueKey,
                             SubscriptionDate = s.SubscriptionDate,
                             SubscriptionTypeId = s.SubscriptionTypeId,
-                            SubscriptionTypeName = st.Name,
-                            Quantity = so.Quantity
+                            SubscriptionTypeName = st.Name
 
                         };
 

@@ -17,8 +17,6 @@ namespace Embrace.Entities
         public DateTime Next_Mens_End { get; set; }
         public DateTime Ovulation_Window_Start { get; set; }
         public DateTime Ovulation_Window_End { get; set; }
-        public string Status { get; set; }
-       
 
     }
 }

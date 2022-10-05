@@ -11,6 +11,7 @@ namespace Embrace.Entities
         public string Name { get; set; }
         public DateTime DateAndTime { get; set; }
         public DateTime StartDatePeriod { get; set; }
+        public DateTime EndDatePeriod { get; set; }
         public string UniqueKey { get; set; }
 
     }
