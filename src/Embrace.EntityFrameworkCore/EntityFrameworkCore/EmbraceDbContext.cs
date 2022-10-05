@@ -32,7 +32,8 @@ namespace Embrace.EntityFrameworkCore
         public DbSet<CategoryInfo> CategoryInfo { get; set; }
         public DbSet<BlogInfo> BlogInfo { get; set; }
         public DbSet<BlogCategoryInfo> BlogCategoryInfo { get; set; }
-        public DbSet<BlogBlogCategoryAllocationInfo> BlogBlogCategoryAllocationInfo { get; set; }
-        public DbSet<AlertInfo> AlertInfo { get; set; }
+        public DbSet<BlogBlogCategoryAllocationInfo> BlogBlogCategoryAllocationInfo { get; set; }    
+        public DbSet<UserBlogInfo> UserBlogInfo { get; set; }    
+
     }
 }

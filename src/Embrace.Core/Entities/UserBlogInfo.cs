@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Embrace.Entities
 {
-    public class UniqueNameAndDateInfo : EmbraceProjBaseEntity
+    public class UserBlogInfo : EmbraceProjBaseEntity
     {
-        public string Name { get; set; }
-        public DateTime DateAndTime { get; set; }
-        public DateTime StartDatePeriod { get; set; }
         public string UniqueKey { get; set; }
+        public long BlogId { get; set; }
+        public bool IsSavedBlog { get; set; }
 
     }
 }

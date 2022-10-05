@@ -26,5 +26,6 @@ namespace Embrace.Entities.SubscriptionOrderPayementAllocation.Dto
         public DateTime SubscriptionDate { get; set; }
         public long SubscriptionTypeId { get; set; }
         public string SubscriptionTypeName { get; set; }
+        public double Quantity { get; set; }
     }
 }
