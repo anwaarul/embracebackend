@@ -861,11 +861,11 @@ namespace Embrace.General
 
         public PagedResultDto<GetAllBlogDto> GetAllBlogsbyCategoryName(string categoryName, int tenantId)
         {
-            var category = _categoryRepository.GetAll().Where(x => x.Name.Contains(categoryName) && x.TenantId == tenantId).FirstOrDefault();
+            var category = _blogCategoryRepository.GetAll().Where(x => x.Name.Contains(categoryName) && x.TenantId == tenantId).FirstOrDefault();
             if (category != null)
             {
                 var query = from sb in _blogRepository.GetAll().Where(x => x.IsActive == true && x.CategoryId == category.Id && x.TenantId == tenantId)
-                            join ca in _categoryRepository.GetAll() on sb.CategoryId equals ca.Id
+                            join ca in _blogCategoryRepository.GetAll() on sb.CategoryId equals ca.Id
                             select new GetAllBlogDto()
                             {
                                 Id = sb.Id,
@@ -1252,26 +1252,26 @@ namespace Embrace.General
 
         }
 
-        public AlertDto CreateAlert(AlertDto input)
+        public AlertDto CreateAlert(AlertDto input, int TenantId)
         {
             var dto = ObjectMapper.Map<AlertInfo>(input);
-            dto.TenantId = AbpSession.TenantId.Value;
+            dto.TenantId = TenantId;
             alert_repo.Insert(dto);
             CurrentUnitOfWork.SaveChanges();
             return ObjectMapper.Map<AlertDto>(dto);
         }
 
-        public PagedResultDto<AlertDto> GetAllAlerts(PagedResultRequestDto input)
+        public PagedResultDto<AlertDto> GetAllAlerts(PagedResultRequestDto input, int TenantId)
         {
-            var query = alert_repo.GetAll().Where(x => x.TenantId == AbpSession.TenantId);
+            var query = alert_repo.GetAll().Where(x => x.TenantId == TenantId);
             var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
             return result;
         }
 
-        public PagedResultDto<AlertDto> GetAlertsByUniqueKey(PagedResultRequestDto input, string UniqueKey)
+        public PagedResultDto<AlertDto> GetAlertsByUniqueKey(PagedResultRequestDto input, string UniqueKey, int TenantId)
         {
-            var query = alert_repo.GetAll().Where(x => x.UniqueKey == UniqueKey && x.TenantId == AbpSession.TenantId);
+            var query = alert_repo.GetAll().Where(x => x.UniqueKey == UniqueKey && x.TenantId == TenantId);
             var statelist = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var result = new PagedResultDto<AlertDto>(query.Count(), ObjectMapper.Map<List<AlertDto>>(statelist));
             return result;
