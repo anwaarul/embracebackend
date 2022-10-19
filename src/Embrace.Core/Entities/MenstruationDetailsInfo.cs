@@ -10,6 +10,7 @@ namespace Embrace.Entities
     {
         public string UniqueKey { get; set; }
         public DateTime MyCycle { get; set; }
+        public int CycleDay { get; set; }
         public DateTime Ovulation_date { get; set; }
         public DateTime Last_Mens_Start { get; set; }
         public DateTime Last_Mens_End { get; set; }
@@ -17,6 +18,7 @@ namespace Embrace.Entities
         public DateTime Next_Mens_End { get; set; }
         public DateTime Ovulation_Window_Start { get; set; }
         public DateTime Ovulation_Window_End { get; set; }
+        public string Status { get; set; }
 
     }
 }

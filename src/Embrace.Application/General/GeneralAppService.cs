@@ -129,9 +129,13 @@ namespace Embrace.General
             GetAllMenstruationDetails menstruation = new GetAllMenstruationDetails();
             UniqueNameAndDateInfo result = new UniqueNameAndDateInfo();
             var dataUniqueKey = _uniqueNameAndDateInfoRepository.GetAll().Where(x => x.UniqueKey == input.UniqueKey && x.TenantId == input.TenantId).OrderByDescending(x => x.Id).FirstOrDefault();
-
-            if (dataUniqueKey.StartDatePeriod.Date.Month == input.DateAndTime.Date.Month)
+            var addtwentyoneday = dataUniqueKey.StartDatePeriod.AddDays(20);
+            var addfourtyday = dataUniqueKey.StartDatePeriod.AddDays(39);
+            if (input.DateAndTime.Date < addtwentyoneday.Date)
             {
+                //TimeSpan datediffernce = input.DateAndTime.Date.Subtract(dataUniqueKey.StartDatePeriod.Date);
+
+                var datediffernce = input.DateAndTime - dataUniqueKey.StartDatePeriod;
                 result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
                 result.Name = dataUniqueKey.Name;
                 result.StartDatePeriod = input.DateAndTime;
@@ -139,52 +143,14 @@ namespace Embrace.General
                 result.UniqueKey = dataUniqueKey.UniqueKey;
                 result.DateAndTime = dataUniqueKey.DateAndTime;
                 await _uniqueNameAndDateInfoRepository.UpdateAsync(result);
-
                 result.IsActive = true;
 
-<<<<<<< HEAD
-                CurrentUnitOfWork.SaveChanges();
-                menstruation = GetAllMenstruation(result.StartDatePeriod);
-                var menstrationdata = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey && x.TenantId == input.TenantId).FirstOrDefault();
-                var menstration = ObjectMapper.Map<MenstruationDetailsInfo>(menstrationdata);
-                menstration.TenantId = input.TenantId;
-                menstration.UniqueKey = result.UniqueKey;
-                menstration.MyCycle = menstruation.MyCycle;
-                menstration.Ovulation_date = menstruation.Ovulation_date;
-                menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
-                menstration.Last_Mens_End = menstruation.Last_Mens_End;
-                menstration.Next_Mens_Start = menstruation.Next_Mens_Start;
-                menstration.Next_Mens_End = menstruation.Next_Mens_End;
-                menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
-                menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-
-
-                await _menstruationDetailsRepository.UpdateAsync(menstration);
-
-                menstration.IsActive = true;
-
-                CurrentUnitOfWork.SaveChanges();
-            }
-            else
-            {
-                result = ObjectMapper.Map<UniqueNameAndDateInfo>(input);
-                result.Name = dataUniqueKey.Name;
-                result.StartDatePeriod = input.DateAndTime;
-                result.TenantId = input.TenantId;
-                result.UniqueKey = dataUniqueKey.UniqueKey;
-                result.DateAndTime = dataUniqueKey.DateAndTime;
-                await _uniqueNameAndDateInfoRepository.InsertAsync(result);
-
-                result.IsActive = true;
-
-                CurrentUnitOfWork.SaveChanges();
-=======
->>>>>>> parent of 6dacacd (Revert "MenstrationCycle")
                 menstruation = GetAllMenstruation(result.StartDatePeriod);
                 var menstration = new MenstruationDetailsInfo();
                 menstration.TenantId = input.TenantId;
                 menstration.UniqueKey = result.UniqueKey;
-                menstration.MyCycle = menstruation.MyCycle;
+                menstration.CycleDay = 28;
+                menstration.MyCycle = input.DateAndTime.Date;
                 menstration.Ovulation_date = menstruation.Ovulation_date;
                 menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
                 menstration.Last_Mens_End = menstruation.Last_Mens_End;
@@ -192,11 +158,8 @@ namespace Embrace.General
                 menstration.Next_Mens_End = menstruation.Next_Mens_End;
                 menstration.Ovulation_Window_Start = menstruation.Ovulation_Window_Start;
                 menstration.Ovulation_Window_End = menstruation.Ovulation_Window_End;
-
-
+                menstration.Status = "Normal";
                 await _menstruationDetailsRepository.InsertAsync(menstration);
-<<<<<<< HEAD
-=======
                 menstration.IsActive = true;
 
                 CurrentUnitOfWork.SaveChanges();
@@ -204,15 +167,19 @@ namespace Embrace.General
                 var item = menstruationDetails[menstruationDetails.Count - 2];
                 var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(item);
                 updatemenstration.Status = "Abnormal";
-                
+                updatemenstration.CycleDay = ((int)datediffernce.TotalDays);
+                updatemenstration.Last_Mens_End = menstration.Last_Mens_Start.AddDays(-1);
+
                 await _menstruationDetailsRepository.UpdateAsync(menstration);
 
                 updatemenstration.IsActive = true;
 
                 CurrentUnitOfWork.SaveChanges();
             }
-            if(input.DateAndTime.Date > addfourtyday.Date)
+            if (input.DateAndTime.Date > addfourtyday.Date)
             {
+                var datediffernce = input.DateAndTime - dataUniqueKey.StartDatePeriod;
+
                 result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
                 result.Name = dataUniqueKey.Name;
                 result.StartDatePeriod = input.DateAndTime;
@@ -225,6 +192,8 @@ namespace Embrace.General
                 menstruation = GetAllMenstruation(result.StartDatePeriod);
                 var menstration = new MenstruationDetailsInfo();
                 menstration.TenantId = input.TenantId;
+                menstration.CycleDay = 28;
+                menstration.MyCycle = input.DateAndTime.Date;
                 menstration.UniqueKey = result.UniqueKey;
                 menstration.MyCycle = menstruation.MyCycle;
                 menstration.Ovulation_date = menstruation.Ovulation_date;
@@ -244,20 +213,19 @@ namespace Embrace.General
 
                 var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(item);
                 updatemenstration.Status = "Abnormal";
-
+                updatemenstration.CycleDay = ((int)datediffernce.TotalDays);
+                updatemenstration.Last_Mens_End = menstration.Last_Mens_Start.AddDays(-1);
                 await _menstruationDetailsRepository.UpdateAsync(menstration);
->>>>>>> parent of 6dacacd (Revert "MenstrationCycle")
 
                 updatemenstration.IsActive = true;
 
                 CurrentUnitOfWork.SaveChanges();
 
             }
-<<<<<<< HEAD
-
-=======
             if (input.DateAndTime.Date <= addfourtyday.Date && input.DateAndTime.Date >= addtwentyoneday.Date)
             {
+                var datediffernce = input.DateAndTime - dataUniqueKey.StartDatePeriod;
+
                 result = ObjectMapper.Map<UniqueNameAndDateInfo>(dataUniqueKey);
                 result.Name = dataUniqueKey.Name;
                 result.StartDatePeriod = input.DateAndTime;
@@ -269,10 +237,10 @@ namespace Embrace.General
                 CurrentUnitOfWork.SaveChanges();
                 menstruation = GetAllMenstruation(result.StartDatePeriod);
                 var menstration = new MenstruationDetailsInfo();
-                menstration.Id = 0;
                 menstration.TenantId = input.TenantId;
                 menstration.UniqueKey = result.UniqueKey;
-                menstration.MyCycle = menstruation.MyCycle;
+                menstration.CycleDay = 28;
+                menstration.MyCycle = input.DateAndTime.Date;
                 menstration.Ovulation_date = menstruation.Ovulation_date;
                 menstration.Last_Mens_Start = menstruation.Last_Mens_Start;
                 menstration.Last_Mens_End = menstruation.Last_Mens_End;
@@ -287,17 +255,17 @@ namespace Embrace.General
 
                 var menstruationDetails = _menstruationDetailsRepository.GetAll().Where(x => x.UniqueKey == result.UniqueKey).ToList();
                 var item = menstruationDetails[menstruationDetails.Count - 2];
-      
+
                 var updatemenstration = ObjectMapper.Map<MenstruationDetailsInfo>(item);
                 updatemenstration.Status = "Normal";
+                updatemenstration.Last_Mens_End = menstration.Last_Mens_Start.AddDays(-1);
 
                 await _menstruationDetailsRepository.UpdateAsync(updatemenstration);
-
+                updatemenstration.CycleDay = ((int)datediffernce.TotalDays);
                 updatemenstration.IsActive = true;
 
                 CurrentUnitOfWork.SaveChanges();
             }
->>>>>>> parent of 6dacacd (Revert "MenstrationCycle")
             var data = ObjectMapper.Map<UniqueNameAndDateUniqueKeyDto>(result);
             return data;
 
